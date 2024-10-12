@@ -265,20 +265,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8f20def569af324b9cde693ab0c27f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  soilTile: {fileID: 11400000, guid: 98ca5061ec8924943a3ae5936564ae47, type: 2}
-  grassTile: {fileID: 11400000, guid: 61bc2977a10cb3e47843f9cb6fb31dcb, type: 2}
-  waterTile: {fileID: 11400000, guid: 412bc8e44e391b2449057161677dad64, type: 2}
-  mountainTile: {fileID: 11400000, guid: 4df97fb13c414aa4fa3914c1a2fbe836, type: 2}
   groundTilemap: {fileID: 1605018917}
   waterTilemap: {fileID: 1247226048}
   mapWidth: 200
   mapHeight: 200
-  noiseScale: 11.3
-  numOctaves: 10
-  persistence: 0.189
-  lacunarity: 2.59
+  noiseScale: 14.3
+  numOctaves: 5
+  persistence: 0.645
+  lacunarity: 2.64
+  xOffset: 1889
+  yOffset: 3366
+  noiseTiles:
+  - tile: {fileID: 11400000, guid: 412bc8e44e391b2449057161677dad64, type: 2}
+    noiseThreshold: 0.3
+  - tile: {fileID: 11400000, guid: f61cedb016118a04b90b152fa5e515f5, type: 2}
+    noiseThreshold: 0.36
+  - tile: {fileID: 11400000, guid: dfb20b5b2edfea1458afc719d8931682, type: 2}
+    noiseThreshold: 0.4
+  - tile: {fileID: 11400000, guid: 00e0a46737e5f444dad2474db4df3356, type: 2}
+    noiseThreshold: 0.42
+  - tile: {fileID: 11400000, guid: 98ca5061ec8924943a3ae5936564ae47, type: 2}
+    noiseThreshold: 0.5
+  - tile: {fileID: 11400000, guid: 61bc2977a10cb3e47843f9cb6fb31dcb, type: 2}
+    noiseThreshold: 0.6
+  - tile: {fileID: 11400000, guid: 4df97fb13c414aa4fa3914c1a2fbe836, type: 2}
+    noiseThreshold: 0.8
   islandify: 1
-  islandSize: 0.942
+  islandSize: 0.912
 --- !u!4 &663341367
 Transform:
   m_ObjectHideFlags: 0
