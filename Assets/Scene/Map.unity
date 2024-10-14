@@ -246,6 +246,7 @@ GameObject:
   m_Component:
   - component: {fileID: 663341367}
   - component: {fileID: 663341366}
+  - component: {fileID: 663341368}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -269,12 +270,14 @@ MonoBehaviour:
   waterTilemap: {fileID: 1247226048}
   mapWidth: 200
   mapHeight: 200
-  noiseScale: 14.3
-  numOctaves: 5
-  persistence: 0.645
-  lacunarity: 2.64
-  xOffset: 1889
-  yOffset: 3366
+  noiseScale: 12.7
+  numOctaves: 9
+  persistence: 0.358
+  lacunarity: 2.53
+  noiseOffsetX: 2131
+  noiseOffsetY: 3864
+  initialAmplitude: 3.52
+  initialFrequency: 2.27
   noiseTiles:
   - tile: {fileID: 11400000, guid: 412bc8e44e391b2449057161677dad64, type: 2}
     noiseThreshold: 0.3
@@ -291,7 +294,7 @@ MonoBehaviour:
   - tile: {fileID: 11400000, guid: 4df97fb13c414aa4fa3914c1a2fbe836, type: 2}
     noiseThreshold: 0.8
   islandify: 1
-  islandSize: 0.912
+  islandSize: 0.949
 --- !u!4 &663341367
 Transform:
   m_ObjectHideFlags: 0
@@ -307,6 +310,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &663341368
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663341365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 69857329642a2574ab2b32b9bd3e31dc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundTilemap: {fileID: 1605018917}
+  grassAndSoilTrees:
+  - {fileID: 7476725127279051275, guid: 2c8c8be9ddd1ff542b5984cd0e3242f5, type: 3}
+  - {fileID: 7476725127279051275, guid: 5c68e3772fbbd974581d73094e25b971, type: 3}
+  sandTrees:
+  - {fileID: 2819080875666936401, guid: 87c68ebd3fbbcb24e80f953c320e222b, type: 3}
+  - {fileID: 2819080875666936401, guid: feeec3b4f3f4a6a4782d377204a21cbc, type: 3}
+  vegetationDensity: 0.173
+  noiseScale: 1.27
+  minDistanceBetweenTrees: 1.65
+  mapWidth: 200
+  mapHeight: 200
 --- !u!1 &1247226045
 GameObject:
   m_ObjectHideFlags: 0

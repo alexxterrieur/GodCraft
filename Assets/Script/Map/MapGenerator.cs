@@ -16,8 +16,8 @@ public class MapGenerator : MonoBehaviour
     public Tilemap waterTilemap;
 
     [Header("Map Size")]
-    [SerializeField] private int mapWidth = 100;
-    [SerializeField] private int mapHeight = 100;
+    [SerializeField] private int mapWidth;
+    [SerializeField] private int mapHeight;
 
     private float centerX;
     private float centerY;
@@ -30,12 +30,15 @@ public class MapGenerator : MonoBehaviour
     [Range(0, 5000)] public int noiseOffsetX;
     [Range(0, 5000)] public int noiseOffsetY;
 
+    [Range(0.1f, 5f)] public float initialAmplitude;
+    [Range(0.1f, 5f)] public float initialFrequency;
+
     [Header("Tiles Based on Noise")]
     public List<NoiseTile> noiseTiles;
 
     [Header("Islandify")]
     public bool islandify = false;
-    [Range(0.1f, 0.99f)] public float islandSize = 0.7f;
+    [Range(0.7f, 0.99f)] public float islandSize;
 
     void Start()
     {
@@ -47,12 +50,15 @@ public class MapGenerator : MonoBehaviour
 
     void GenerateMap()
     {
+        int xOffset = mapWidth / 2;
+        int yOffset = mapHeight / 2;
+
         for (int x = 0; x < mapWidth; x++)
         {
             for (int y = 0; y < mapHeight; y++)
             {
                 float noiseValue = islandify ? GetIslandNoiseValue(x, y) : GetPerlinNoiseWithOctaves(x, y);
-                CreateTile(noiseValue, x - centerX, y - centerY);
+                CreateTile(noiseValue, x - xOffset, y - yOffset);
             }
         }
     }
@@ -60,8 +66,8 @@ public class MapGenerator : MonoBehaviour
     float GetPerlinNoiseWithOctaves(int x, int y)
     {
         float total = 0f;
-        float frequency = 1f;
-        float amplitude = 1f;
+        float frequency = initialFrequency;
+        float amplitude = initialAmplitude;
         float normalizedValue = 0f;
 
         for (int i = 0; i < numOctaves; i++)
