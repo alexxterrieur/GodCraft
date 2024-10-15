@@ -25,7 +25,7 @@ public class VegetationGenerator : MonoBehaviour
     private float centerX;
     private float centerY;
 
-    private List<Vector3> placedTrees = new List<Vector3>(); 
+    private List<Vector3> placedTrees = new List<Vector3>();
 
     //Call start function after 1 second so the map is spawn before
     IEnumerator Start()
@@ -42,11 +42,13 @@ public class VegetationGenerator : MonoBehaviour
         {
             for (int y = 0; y < mapHeight; y++)
             {
+                //Get tiles positions
                 Vector3Int tilePosition = new Vector3Int(x - (mapWidth / 2), y - (mapHeight / 2), 0);
                 Tile tile = groundTilemap.GetTile<Tile>(tilePosition);
 
                 if (tile != null)
                 {
+                    //check if the noiseScale allows to place a tree on the tile
                     float noiseValue = Mathf.PerlinNoise((x / noiseScale), (y / noiseScale));
 
                     if (noiseValue < vegetationDensity)
@@ -82,6 +84,7 @@ public class VegetationGenerator : MonoBehaviour
             int randomIndex = Random.Range(0, treePrefabs.Count);
             GameObject selectedTree = treePrefabs[randomIndex];
 
+            //Get world position (+ offset to be well placed)
             Vector3 worldPosition = groundTilemap.CellToWorld(position) + new Vector3(0.5f, 0.5f, 0);
 
             if (CanPlaceTree(worldPosition))
@@ -96,6 +99,7 @@ public class VegetationGenerator : MonoBehaviour
     {
         foreach (Vector3 placedPosition in placedTrees)
         {
+            //Avoid trees to be too close
             if (Vector3.Distance(position, placedPosition) < minDistanceBetweenTrees)
             {
                 return false;
