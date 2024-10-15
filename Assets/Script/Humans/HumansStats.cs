@@ -10,4 +10,5 @@ public class HumansStats : ScriptableObject
     public int lifeEspectancy = 110;
     public int strenght = 60;
     public int speed = 20;
+
 }
