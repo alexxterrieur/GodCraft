@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class HumansAI : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class HumansAI : MonoBehaviour
     private enum HumanState { Idle, SearchingFood, SearchingWater}
     private HumanState currentState = HumanState.Idle;
 
+
     private void Start()
     {
         timeManager = GameObject.FindWithTag("Managers").GetComponent<TimeManager>();
@@ -25,6 +27,10 @@ public class HumansAI : MonoBehaviour
         StartCoroutine(TimeBasedUpdates());
     }
 
+    private void Update()
+    {
+        
+    }
     IEnumerator TimeBasedUpdates()
     {
         while (true)

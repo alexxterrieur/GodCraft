@@ -1,5 +1,7 @@
+using NavMeshPlus.Components;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Tilemaps;
 
 [System.Serializable]
@@ -40,12 +42,16 @@ public class MapGenerator : MonoBehaviour
     public bool islandify = false;
     [Range(0.7f, 0.99f)] public float islandSize;
 
+    [Header("NavMesh")]
+    public NavMeshSurface navMeshSurface;
+
     void Start()
     {
         centerX = mapWidth / 2f;
         centerY = mapHeight / 2f;
 
         GenerateMap();
+        navMeshSurface.BuildNavMesh();
     }
 
     void GenerateMap()
