@@ -89,7 +89,8 @@ public class VegetationGenerator : MonoBehaviour
 
             if (CanPlaceTree(worldPosition))
             {
-                Instantiate(selectedTree, worldPosition, Quaternion.identity);
+                GameObject tree = Instantiate(selectedTree, worldPosition, Quaternion.identity);
+                tree.transform.parent = gameObject.transform;
                 placedTrees.Add(worldPosition);
             }
         }
