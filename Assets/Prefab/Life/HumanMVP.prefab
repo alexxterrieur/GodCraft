@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 5098144093942452276}
   - component: {fileID: 2265796194508222506}
   - component: {fileID: 8212811930154410809}
-  - component: {fileID: 1463533507238017248}
   m_Layer: 0
   m_Name: HumanMVP
   m_TagString: Untagged
@@ -103,6 +102,7 @@ MonoBehaviour:
   timeManager: {fileID: 0}
   hunger: 100
   thirst: 100
+  navMeshAgent: {fileID: 0}
 --- !u!195 &8212811930154410809
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -125,18 +125,3 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1463533507238017248
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3103709489662281376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b7eb0b96f6ae9542a295d1b495c35e4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  wanderRadius: 10
-  wanderTime: 5

@@ -326,9 +326,11 @@ GameObject:
   - component: {fileID: 663341367}
   - component: {fileID: 663341366}
   - component: {fileID: 663341368}
+  - component: {fileID: 663341369}
+  - component: {fileID: 663341370}
   m_Layer: 0
   m_Name: Map
-  m_TagString: Untagged
+  m_TagString: Managers
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -413,11 +415,41 @@ MonoBehaviour:
   sandTrees:
   - {fileID: 2819080875666936401, guid: 87c68ebd3fbbcb24e80f953c320e222b, type: 3}
   - {fileID: 2819080875666936401, guid: feeec3b4f3f4a6a4782d377204a21cbc, type: 3}
-  vegetationDensity: 0.173
-  noiseScale: 1.27
-  minDistanceBetweenTrees: 1.65
+  vegetationDensity: 0.2
+  noiseScale: 2
+  minDistanceBetweenTrees: 0.7
   mapWidth: 200
   mapHeight: 200
+--- !u!114 &663341369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663341365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1573651cd57c56844aaca35fe2bbac42, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeSpeed: 1
+  monthDuration: 2
+  timeDisplay: {fileID: 956465106}
+--- !u!114 &663341370
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 663341365}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b970c8eae5d4a1946b73024f58a3ad89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterTilemap: {fileID: 1247226048}
+  groundTilemap: {fileID: 1605018917}
+  allTrees: []
 --- !u!1 &793872147
 GameObject:
   m_ObjectHideFlags: 0
@@ -530,14 +562,13 @@ GameObject:
   m_Component:
   - component: {fileID: 892549046}
   - component: {fileID: 892549045}
-  - component: {fileID: 892549047}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Managers
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &892549045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -565,21 +596,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &892549047
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 892549044}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1573651cd57c56844aaca35fe2bbac42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timeSpeed: 1
-  monthDuration: 2
-  timeDisplay: {fileID: 956465106}
 --- !u!1 &956465104
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,7 +760,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameObjectToSpawn: {fileID: 3103709489662281376, guid: d130a7babe9d1b942a77cdc7e1218ddb, type: 3}
-  spawnBuffer: 0.3
+  spawnBuffer: 0.2
 --- !u!4 &1183303774
 Transform:
   m_ObjectHideFlags: 0

@@ -92,6 +92,12 @@ public class VegetationGenerator : MonoBehaviour
                 GameObject tree = Instantiate(selectedTree, worldPosition, Quaternion.identity);
                 tree.transform.parent = gameObject.transform;
                 placedTrees.Add(worldPosition);
+
+                TreeParameters treeParams = tree.GetComponent<TreeParameters>();
+                if (treeParams != null)
+                {
+                    WorldRessources.instance.RegisterTree(treeParams);
+                }
             }
         }
     }

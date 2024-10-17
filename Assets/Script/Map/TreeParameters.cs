@@ -6,7 +6,7 @@ public class TreeParameters : MonoBehaviour
 {
     public bool canGiveFood;
     public int foodGiven;
-    private bool foodHarvested;
+    public bool foodHarvested;
     public float foodCooldown;
     public float woodGiven;
 
