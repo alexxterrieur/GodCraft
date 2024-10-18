@@ -79,35 +79,43 @@ public class WorldRessources : MonoBehaviour
     public Vector3 FindNearestWater(Vector3 position)
     {
         Vector2Int gridPosition = GetGridPosition(position);
-
         Vector3 nearestWater = Vector3.zero;
         float nearestDistance = Mathf.Infinity;
 
-        for(int x = -1; x <= 1; x++)
+        int searchRadius = 1;
+
+        //Gradually expand the search
+        while (nearestWater == Vector3.zero && searchRadius <= 10)
         {
-            for (int y = -1; y <= 1; y++)
+            for (int x = -searchRadius; x <= searchRadius; x++)
             {
-                Vector2Int gridToCheck = new Vector2Int(gridPosition.x, gridPosition.y + y);
-                if (waterGrid.ContainsKey(gridToCheck))
+                for (int y = -searchRadius; y <= searchRadius; y++)
                 {
-                    Vector3 waterPosition = waterGrid[gridToCheck];
-                    float distance = Vector3.Distance(position, waterPosition);
-                    if (distance < nearestDistance)
+                    Vector2Int gridToCheck = new Vector2Int(gridPosition.x + x, gridPosition.y + y);
+                    if (waterGrid.ContainsKey(gridToCheck))
                     {
-                        nearestDistance = distance;
-                        nearestWater = waterPosition;
+                        Vector3 waterPosition = waterGrid[gridToCheck];
+                        float distance = Vector3.Distance(position, waterPosition);
+                        if (distance < nearestDistance)
+                        {
+                            nearestDistance = distance;
+                            nearestWater = waterPosition;
+                        }
                     }
                 }
             }
+
+            searchRadius++;
         }
 
-        if(nearestWater == Vector3.zero)
+        if (nearestWater == Vector3.zero)
         {
-            print("no water found");
+            Debug.LogWarning("No water found within search radius");
         }
 
         return nearestWater;
     }
+
 
     private Vector2Int GetGridPosition(Vector3 worldPosition)
     {

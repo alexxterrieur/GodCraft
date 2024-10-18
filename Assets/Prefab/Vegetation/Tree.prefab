@@ -98,6 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canGiveFood: 1
-  foodGiven: 20
+  foodGiven: 50
+  foodHarvested: 0
   foodCooldown: 6
   woodGiven: 30

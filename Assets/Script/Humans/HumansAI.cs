@@ -1,6 +1,6 @@
-using System.Collections;
-using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine;
+using System.Collections;
 
 public class HumansAI : MonoBehaviour
 {
@@ -18,7 +18,9 @@ public class HumansAI : MonoBehaviour
     private HumanState currentState = HumanState.Idle;
 
     private TreeParameters currentTargetTree;
-    private float interactionDistance = 3f;
+    private float interactionDistance = 1f;
+
+    private bool isBusy = false;
 
     private void Awake()
     {
@@ -71,23 +73,29 @@ public class HumansAI : MonoBehaviour
                 isAdult = true;
             }
 
-            CheckNeeds();
+            if (!isBusy)
+            {
+                CheckNeeds();
+            }
         }
     }
 
     void CheckNeeds()
     {
-        if (hunger <= 15 && currentState != HumanState.SearchingFood)
+        if (hunger <= 40 && currentState != HumanState.SearchingFood)
         {
             currentState = HumanState.SearchingFood;
+            isBusy = true;
         }
-        else if (thirst <= 15 && currentState != HumanState.SearchingWater)
+        else if (thirst <= 40 && currentState != HumanState.SearchingWater)
         {
             currentState = HumanState.SearchingWater;
+            isBusy = true;
         }
         else
         {
             currentState = HumanState.Idle;
+            isBusy = false;
         }
     }
 
@@ -103,7 +111,8 @@ public class HumansAI : MonoBehaviour
             }
             else
             {
-                currentState = HumanState.Idle; //no tree found
+                currentState = HumanState.Idle;
+                isBusy = false;
             }
         }
 
@@ -111,30 +120,42 @@ public class HumansAI : MonoBehaviour
         if (currentTargetTree != null && Vector3.Distance(transform.position, currentTargetTree.transform.position) < interactionDistance)
         {
             currentTargetTree.HarvestFood(this);
-            currentState = HumanState.Idle;
+            currentTargetTree = null;
+            StartCoroutine(Interacting());
+            isBusy = false;
+            CheckNeeds();
         }
     }
 
     void SearchWater()
     {
         Vector3 nearestWater = WorldRessources.instance.FindNearestWater(transform.position);
-        print("searching water");
+
         if (nearestWater != Vector3.zero)
         {
             agent.SetDestination(nearestWater);
         }
         else
         {
-            print("water = vector zero");
             currentState = HumanState.Idle;
+            isBusy = false;
         }
 
         //Interact with water
         if(Vector3.Distance(transform.position, nearestWater) < interactionDistance)
         {
-            thirst += 20;
-            currentState = HumanState.Idle;
+            thirst += 60;
+            StartCoroutine(Interacting());
+            isBusy = false;
+            CheckNeeds();
         }
+    }
+
+    IEnumerator Interacting()
+    {
+        agent.isStopped = true;
+        yield return new WaitForSeconds(1);
+        agent.isStopped = false;
     }
 
     void Idle()
