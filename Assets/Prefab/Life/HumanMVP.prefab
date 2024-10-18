@@ -10,11 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 2692566032699604817}
   - component: {fileID: 5098144093942452276}
-  - component: {fileID: 2265796194508222506}
   - component: {fileID: 8212811930154410809}
+  - component: {fileID: 2265796194508222506}
+  - component: {fileID: 1847647424535882185}
   m_Layer: 0
   m_Name: HumanMVP
-  m_TagString: Untagged
+  m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -86,23 +87,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &2265796194508222506
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3103709489662281376}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84fcc39357d59e64091cc0757573431a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stats: {fileID: 11400000, guid: 8cdc188f2a0bd7d4b95b5d550566c1bc, type: 2}
-  timeManager: {fileID: 0}
-  hunger: 150
-  thirst: 100
-  agent: {fileID: 0}
 --- !u!195 &8212811930154410809
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -125,3 +109,35 @@ NavMeshAgent:
   m_BaseOffset: 0.5
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &2265796194508222506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3103709489662281376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84fcc39357d59e64091cc0757573431a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stats: {fileID: 11400000, guid: 8cdc188f2a0bd7d4b95b5d550566c1bc, type: 2}
+  timeManager: {fileID: 0}
+  hunger: 150
+  thirst: 100
+  survivalDamages: 5
+  agent: {fileID: 0}
+--- !u!114 &1847647424535882185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3103709489662281376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 180b32710514eb349aebb127d1928496, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 30
+  currentHealth: 0

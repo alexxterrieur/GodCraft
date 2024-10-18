@@ -11,6 +11,7 @@ public class HumansAI : MonoBehaviour
 
     public float hunger;
     public float thirst;
+    public int survivalDamages;
 
     public NavMeshAgent agent;
 
@@ -21,6 +22,7 @@ public class HumansAI : MonoBehaviour
     private float interactionDistance = 1f;
 
     private bool isBusy = false;
+    private LifeManager lifeManager;
 
     private void Awake()
     {
@@ -33,6 +35,7 @@ public class HumansAI : MonoBehaviour
     {
         timeManager = GameObject.FindWithTag("Managers").GetComponent<TimeManager>();
         birthday = timeManager.GetDate();
+        lifeManager = GetComponent<LifeManager>();
 
         StartCoroutine(TimeBasedUpdates());
     }
@@ -67,15 +70,27 @@ public class HumansAI : MonoBehaviour
             (int currentYear, int currentMonth) = timeManager.GetDate();
             stats.currentAge = currentYear - birthday.year;
 
-            if (stats.currentAge == 18 && currentMonth == birthday.month)
+            if(stats.currentAge == 18 && currentMonth == birthday.month)
             {
                 print(gameObject.name + " human is 18");
                 isAdult = true;
             }
 
+            if(stats.currentAge == stats.lifeEspectancy)
+            {
+                print(gameObject.name + " lifeEsperancy reach");
+                lifeManager.TakeDamage(lifeManager.currentHealth);
+            }
+
             if (!isBusy)
             {
                 CheckNeeds();
+            }
+
+            //Damages
+            if(hunger <= 0 ||  thirst <= 0)
+            {
+                lifeManager.TakeDamage(survivalDamages);
             }
         }
     }
