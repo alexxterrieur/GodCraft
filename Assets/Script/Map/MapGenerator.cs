@@ -1,5 +1,7 @@
+using NavMeshPlus.Components;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Tilemaps;
 
 [System.Serializable]
@@ -40,12 +42,16 @@ public class MapGenerator : MonoBehaviour
     public bool islandify = false;
     [Range(0.7f, 0.99f)] public float islandSize;
 
+    [Header("NavMesh")]
+    public NavMeshSurface navMeshSurface;
+
     void Start()
     {
         centerX = mapWidth / 2f;
         centerY = mapHeight / 2f;
 
         GenerateMap();
+        navMeshSurface.BuildNavMesh();
     }
 
     void GenerateMap()
@@ -117,14 +123,20 @@ public class MapGenerator : MonoBehaviour
         //Assign the tile to the correct tilemap
         if (selectedTile != null)
         {
+            Vector3Int tilePosition = new Vector3Int(x, y, 0);
+
             if (noiseValue < noiseTiles[2].noiseThreshold) //Place the 3 water levels in the water tilemap
             {
-                waterTilemap.SetTile(new Vector3Int(x, y, 0), selectedTile);
+                waterTilemap.SetTile(tilePosition, selectedTile);
+
+                // Register the water tile in WorldRessources
+                WorldRessources.instance.RegisterWaterTile(waterTilemap.CellToWorld(tilePosition));
             }
             else //Place the other levels in the ground tilemap
             {
-                groundTilemap.SetTile(new Vector3Int(x, y, 0), selectedTile);
+                groundTilemap.SetTile(tilePosition, selectedTile);
             }
         }
     }
+
 }
