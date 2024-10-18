@@ -449,7 +449,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waterTilemap: {fileID: 1247226048}
   groundTilemap: {fileID: 1605018917}
-  allTrees: []
+  gridSize: 25
 --- !u!1 &793872147
 GameObject:
   m_ObjectHideFlags: 0

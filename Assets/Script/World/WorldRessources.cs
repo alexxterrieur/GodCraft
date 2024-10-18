@@ -76,6 +76,39 @@ public class WorldRessources : MonoBehaviour
         return nearestTree;
     }
 
+    public Vector3 FindNearestWater(Vector3 position)
+    {
+        Vector2Int gridPosition = GetGridPosition(position);
+
+        Vector3 nearestWater = Vector3.zero;
+        float nearestDistance = Mathf.Infinity;
+
+        for(int x = -1; x <= 1; x++)
+        {
+            for (int y = -1; y <= 1; y++)
+            {
+                Vector2Int gridToCheck = new Vector2Int(gridPosition.x, gridPosition.y + y);
+                if (waterGrid.ContainsKey(gridToCheck))
+                {
+                    Vector3 waterPosition = waterGrid[gridToCheck];
+                    float distance = Vector3.Distance(position, waterPosition);
+                    if (distance < nearestDistance)
+                    {
+                        nearestDistance = distance;
+                        nearestWater = waterPosition;
+                    }
+                }
+            }
+        }
+
+        if(nearestWater == Vector3.zero)
+        {
+            print("no water found");
+        }
+
+        return nearestWater;
+    }
+
     private Vector2Int GetGridPosition(Vector3 worldPosition)
     {
         return new Vector2Int(Mathf.FloorToInt(worldPosition.x / gridSize), Mathf.FloorToInt(worldPosition.y / gridSize));

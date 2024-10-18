@@ -123,14 +123,20 @@ public class MapGenerator : MonoBehaviour
         //Assign the tile to the correct tilemap
         if (selectedTile != null)
         {
+            Vector3Int tilePosition = new Vector3Int(x, y, 0);
+
             if (noiseValue < noiseTiles[2].noiseThreshold) //Place the 3 water levels in the water tilemap
             {
-                waterTilemap.SetTile(new Vector3Int(x, y, 0), selectedTile);
+                waterTilemap.SetTile(tilePosition, selectedTile);
+
+                // Register the water tile in WorldRessources
+                WorldRessources.instance.RegisterWaterTile(waterTilemap.CellToWorld(tilePosition));
             }
             else //Place the other levels in the ground tilemap
             {
-                groundTilemap.SetTile(new Vector3Int(x, y, 0), selectedTile);
+                groundTilemap.SetTile(tilePosition, selectedTile);
             }
         }
     }
+
 }

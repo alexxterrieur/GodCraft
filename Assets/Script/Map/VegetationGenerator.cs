@@ -93,6 +93,7 @@ public class VegetationGenerator : MonoBehaviour
                 tree.transform.parent = gameObject.transform;
                 placedTrees.Add(worldPosition);
 
+                //Register tree in grid (WorldRessources)
                 TreeParameters treeParams = tree.GetComponent<TreeParameters>();
                 if (treeParams != null)
                 {

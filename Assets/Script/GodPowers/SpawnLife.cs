@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
 public class SpawnLife : MonoBehaviour
@@ -32,7 +33,9 @@ public class SpawnLife : MonoBehaviour
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePosition.z = 0;
-        Instantiate(gameObjectToSpawn, mousePosition, Quaternion.identity);
+        GameObject agent = Instantiate(gameObjectToSpawn, mousePosition, Quaternion.identity);
+        agent.GetComponent<NavMeshAgent>().updateRotation = false;
+
     }
 
     private IEnumerator SpawnGameObjects()
