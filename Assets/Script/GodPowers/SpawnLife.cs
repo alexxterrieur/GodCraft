@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class SpawnLife : MonoBehaviour
@@ -19,7 +20,10 @@ public class SpawnLife : MonoBehaviour
             if (!isClicking)
             {
                 isClicking = true;
-                StartCoroutine(SpawnGameObjects());
+                if (!IsPointerOverUI())
+                {
+                    StartCoroutine(SpawnGameObjects());
+                }                
             }
         }
 
@@ -51,5 +55,10 @@ public class SpawnLife : MonoBehaviour
             }
             yield return null;
         }
+    }
+
+    private bool IsPointerOverUI()
+    {
+        return EventSystem.current.IsPointerOverGameObject();
     }
 }
