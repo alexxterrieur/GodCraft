@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Resources;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -36,6 +35,15 @@ public class WorldRessources : MonoBehaviour
         if (!waterGrid.ContainsKey(gridPosition))
         {
             waterGrid[gridPosition] = waterPosition;
+        }
+    }
+
+    public void UnregisterWaterTile(Vector3 waterPosition)
+    {
+        Vector2Int gridPosition = GetGridPosition(waterPosition);
+        if (waterGrid.ContainsKey(gridPosition))
+        {
+            waterGrid.Remove(gridPosition);
         }
     }
 
@@ -115,7 +123,6 @@ public class WorldRessources : MonoBehaviour
 
         return nearestWater;
     }
-
 
     private Vector2Int GetGridPosition(Vector3 worldPosition)
     {
