@@ -97,9 +97,22 @@ public class MapGenerator : MonoBehaviour
         float distanceFromCenter = Vector2.Distance(new Vector2(x, y), new Vector2(centerX, centerY));
         float islandRadius = Mathf.Min(centerX, centerY) * islandSize;
 
-        if (distanceFromCenter < islandRadius)
+        // Return noise value in the island
+        if (distanceFromCenter < islandRadius * 0.7f)
         {
             return rawNoise;
+        }
+
+        //Lower the noise value in the limit of the island to make it smooth
+        else if (distanceFromCenter < islandRadius)
+        {
+            //Distance of the transition zone
+            float distanceFactor = (distanceFromCenter - islandRadius * 0.7f) / (islandRadius * 0.3f);
+
+            //Smooth interpolation
+            float smoothFactor = Mathf.SmoothStep(1f, 0f, distanceFactor);
+
+            return rawNoise * smoothFactor;
         }
         else
         {
