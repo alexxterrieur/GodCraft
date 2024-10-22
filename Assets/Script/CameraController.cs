@@ -18,17 +18,20 @@ public class CameraController : MonoBehaviour
     private float targetZoom;
     private float zoomVelocity;
 
-
     [Header("Drag Parameters")]
-    [SerializeField] private float movementBoundaryTop;
-    [SerializeField] private float movementBoundaryBottom;
-    [SerializeField] private float movementBoundaryRight;
-    [SerializeField] private float movementBoundaryLeft;
+    private float worldWidth = 200f;
+    private float worldHeight = 200f;
+
+    private float movementBoundaryTop;
+    private float movementBoundaryBottom;
+    private float movementBoundaryRight;
+    private float movementBoundaryLeft;
 
     private void Awake()
     {
         mainCamera = GetComponent<Camera>();
         targetZoom = mainCamera.orthographicSize;
+        UpdateMovementBoundaries();
     }
 
     public void OnDrag(InputAction.CallbackContext ctx)
@@ -50,11 +53,18 @@ public class CameraController : MonoBehaviour
 
         float scrollValue = ctx.ReadValue<Vector2>().y;
 
+        //Clamp the zoom value
         targetZoom = Mathf.Clamp(mainCamera.orthographicSize - scrollValue * zoomSensitivity, minZoom, maxZoom);
+
+        //Update boundaries and reposition the camera if necessary
+        UpdateMovementBoundaries();
+        RepositionCameraWithinBoundaries();
     }
 
     private void LateUpdate()
     {
+        UpdateMovementBoundaries();
+
         if (isDragging)
         {
             difference = GetMousePosition - transform.position;
@@ -67,6 +77,46 @@ public class CameraController : MonoBehaviour
         }
 
         mainCamera.orthographicSize = Mathf.SmoothDamp(mainCamera.orthographicSize, targetZoom, ref zoomVelocity, zoomSmoothTime);
+        RepositionCameraWithinBoundaries();
+    }
+
+    //Dynamically calculate the boundaries
+    private void UpdateMovementBoundaries()
+    {
+        float cameraHeight = mainCamera.orthographicSize;
+        float cameraWidth = mainCamera.aspect * cameraHeight;
+
+        //Check if the camera is showing more than the world width/height
+        if (cameraWidth * 2 > worldWidth)
+        {
+            movementBoundaryLeft = movementBoundaryRight = 0;
+        }
+        else
+        {
+            movementBoundaryLeft = -worldWidth / 2 + cameraWidth;
+            movementBoundaryRight = worldWidth / 2 - cameraWidth;
+        }
+
+        if (cameraHeight * 2 > worldHeight)
+        {
+            movementBoundaryBottom = movementBoundaryTop = 0;
+        }
+        else
+        {
+            movementBoundaryBottom = -worldHeight / 2 + cameraHeight;
+            movementBoundaryTop = worldHeight / 2 - cameraHeight;
+        }
+    }
+
+    //Ensure the camera stays within the boundaries
+    private void RepositionCameraWithinBoundaries()
+    {
+        Vector3 clampedPosition = transform.position;
+
+        clampedPosition.x = Mathf.Clamp(clampedPosition.x, movementBoundaryLeft, movementBoundaryRight);
+        clampedPosition.y = Mathf.Clamp(clampedPosition.y, movementBoundaryBottom, movementBoundaryTop);
+
+        transform.position = clampedPosition;
     }
 
     private Vector3 GetMousePosition => mainCamera.ScreenToWorldPoint((Vector3)Mouse.current.position.ReadValue());
