@@ -234,13 +234,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   minZoom: 3
-  maxZoom: 80
+  maxZoom: 95
   zoomSensitivity: 0.07
   zoomSmoothTime: 0.2
-  movementBoundaryTop: 90
-  movementBoundaryBottom: -90
-  movementBoundaryRight: 90
-  movementBoundaryLeft: -90
 --- !u!81 &361867486
 AudioListener:
   m_ObjectHideFlags: 0
@@ -393,7 +389,9 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 677049728}
+  - {fileID: 1116210052}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &663341368
@@ -426,6 +424,7 @@ MonoBehaviour:
     grassAndSoilChance: 40
     mountainChance: 0
     sandChance: 0
+  treesParent: {fileID: 677049728}
   ores:
   - prefab: {fileID: 6116000946683131821, guid: 0aefe287447a22e46b750a13adb9bb98, type: 3}
     grassAndSoilChance: 15
@@ -435,6 +434,7 @@ MonoBehaviour:
     grassAndSoilChance: 7
     mountainChance: 15
     sandChance: 0
+  oresParent: {fileID: 1116210052}
   objectDensity: 0.3
   noiseScale: 3.36
   minDistanceBetweenObjects: 0.8
@@ -470,6 +470,37 @@ MonoBehaviour:
   waterTilemap: {fileID: 1247226048}
   groundTilemap: {fileID: 1605018917}
   gridSize: 25
+--- !u!1 &677049727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 677049728}
+  m_Layer: 0
+  m_Name: TreesParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &677049728
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 677049727}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 663341367}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &793872147
 GameObject:
   m_ObjectHideFlags: 0
@@ -755,6 +786,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 956465104}
   m_CullTransparentMesh: 1
+--- !u!1 &1116210051
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1116210052}
+  m_Layer: 0
+  m_Name: OresParent
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1116210052
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1116210051}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 663341367}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1137863531
 GameObject:
   m_ObjectHideFlags: 0

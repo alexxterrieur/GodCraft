@@ -31,9 +31,11 @@ public class VegetationGenerator : MonoBehaviour
 
     [Header("Trees to Spawn")]
     public List<TreeData> trees;
+    [SerializeField] private Transform treesParent;
 
     [Header("Ores to Spawn")]
     public List<OreData> ores;
+    [SerializeField] private Transform oresParent;
 
     [Header("Spawn Parameters")]
     [Range(0f, 1f)] public float objectDensity;
@@ -120,7 +122,11 @@ public class VegetationGenerator : MonoBehaviour
         if (CanPlaceObject(worldPosition))
         {
             GameObject obj = Instantiate(prefab, worldPosition, Quaternion.identity);
-            obj.transform.parent = gameObject.transform;
+            if (isTree)
+                obj.transform.parent = treesParent;
+            else
+                obj.transform.parent = oresParent;
+
             placedObjects.Add(worldPosition);  //Add to placed objects list
 
             if (isTree)
