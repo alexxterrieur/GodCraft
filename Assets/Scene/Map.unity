@@ -347,14 +347,14 @@ MonoBehaviour:
   waterTilemap: {fileID: 1247226048}
   mapWidth: 200
   mapHeight: 200
-  noiseScale: 10.2
+  noiseScale: 7.4
   numOctaves: 7
-  persistence: 0.42
+  persistence: 0.193
   lacunarity: 2.34
-  noiseOffsetX: 2131
-  noiseOffsetY: 3864
-  initialAmplitude: 3.19
-  initialFrequency: 2.52
+  noiseOffsetX: 0
+  noiseOffsetY: 0
+  initialAmplitude: 3.4
+  initialFrequency: 2.99
   noiseTiles:
   - tile: {fileID: 11400000, guid: 412bc8e44e391b2449057161677dad64, type: 2}
     noiseThreshold: 0.3
@@ -435,8 +435,8 @@ MonoBehaviour:
     mountainChance: 15
     sandChance: 0
   oresParent: {fileID: 1116210052}
-  objectDensity: 0.3
-  noiseScale: 3.36
+  objectDensity: 0.27
+  noiseScale: 3.04
   minDistanceBetweenObjects: 0.8
   mapWidth: 200
   mapHeight: 200

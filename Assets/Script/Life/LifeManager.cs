@@ -26,6 +26,18 @@ public class LifeManager : MonoBehaviour
     {
         if(gameObject.tag == "Human")
         {
+            HumanVillageInfos villageInfo = gameObject.GetComponent<HumanVillageInfos>();
+
+            if (villageInfo.belongsToVillage && villageInfo.village != null)
+            {
+                villageInfo.village.RemoveVillager(villageInfo);
+
+                //if(villageInfo.village.GetVillagerCount() > 0)
+                //{
+                //    villageInfo.village.DesignateNewChief();
+                //}
+            }
+
             print("human dead");
             Destroy(gameObject);
         }

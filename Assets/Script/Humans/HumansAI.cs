@@ -175,6 +175,6 @@ public class HumansAI : MonoBehaviour
 
     void Idle()
     {
-        print("Idle");
+        //rint("Idle");
     }
 }
