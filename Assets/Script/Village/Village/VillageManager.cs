@@ -49,9 +49,9 @@ public class VillageManager : MonoBehaviour
     {
         if (villagers.Count > 0)
         {
-            HumanVillageInfos newChief = villagers[0];
+            HumanVillageInfos newChief = villagers[1]; //Index 1 because call before removing current the chief
             newChief.isVillageChief = true;
-            Debug.Log("newChief");
+            Debug.Log(newChief.name + " is the new village chief.");
         }
     }
 }

@@ -16,7 +16,7 @@ public class LifeManager : MonoBehaviour
     {
         currentHealth -= damage;
 
-        if (currentHealth <= 0)
+        if(currentHealth <= 0)
         {
             Death();
         }
@@ -28,14 +28,14 @@ public class LifeManager : MonoBehaviour
         {
             HumanVillageInfos villageInfo = gameObject.GetComponent<HumanVillageInfos>();
 
-            if (villageInfo.belongsToVillage && villageInfo.village != null)
+            if(villageInfo.belongsToVillage && villageInfo.village != null)
             {
-                villageInfo.village.RemoveVillager(villageInfo);
+                if(villageInfo.isVillageChief)
+                {
+                    villageInfo.village.DesignateNewChief();
+                }
 
-                //if(villageInfo.village.GetVillagerCount() > 0)
-                //{
-                //    villageInfo.village.DesignateNewChief();
-                //}
+                villageInfo.village.RemoveVillager(villageInfo);                
             }
 
             print("human dead");
