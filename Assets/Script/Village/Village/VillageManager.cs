@@ -7,6 +7,26 @@ public class VillageManager : MonoBehaviour
     public List<HumanVillageInfos> villagers = new List<HumanVillageInfos>();
     private bool villageInitialized = false;
 
+    private int currentLevel = 1;
+    [SerializeField] private VillageLevelData[] villageLevelDatas = new VillageLevelData[5];
+    private VillageLevelData currentVillageLevelData;
+
+    private VillageStorage villageStorage;
+
+    private void Start()
+    {
+        villageStorage = GetComponent<VillageStorage>();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Debug.Log("test level evolution in VillageManager");
+            EvolveVillage();
+        }
+    }
+
     public void InitializeVillage(List<HumanVillageInfos> initialVillagers)
     {
         if (!villageInitialized)
@@ -16,6 +36,7 @@ public class VillageManager : MonoBehaviour
                 AddVillager(human);
             }
 
+            currentVillageLevelData = villageLevelDatas[0];
             villageInitialized = true;
         }
     }
@@ -37,6 +58,16 @@ public class VillageManager : MonoBehaviour
             villagers.Remove(human);
             human.belongsToVillage = false;
             human.village = null;
+        }
+    }
+
+    public void EvolveVillage()
+    {
+        if(currentLevel < villageLevelDatas.Length)
+        {
+            currentLevel++;
+            currentVillageLevelData = villageLevelDatas[currentLevel - 1];
+            villageStorage.SetMaxStorageValues(currentVillageLevelData);
         }
     }
 

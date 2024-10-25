@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2315600979338748927}
   - component: {fileID: 7934648744695224732}
   - component: {fileID: 5787015387009523128}
+  - component: {fileID: 4413100289201078010}
   m_Layer: 0
   m_Name: TownHall
   m_TagString: Untagged
@@ -98,3 +99,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   villagers: []
+  villageLevelDatas:
+  - {fileID: 11400000, guid: b5028064803776a458696aa2fc5b8491, type: 2}
+  - {fileID: 11400000, guid: 31021f4a950070f468192996e74ce7d9, type: 2}
+  - {fileID: 11400000, guid: 5f52a7c39a555aa42ab58e453faa83da, type: 2}
+  - {fileID: 11400000, guid: 0de606ca8812e5f46a2443ce039c6b2a, type: 2}
+  - {fileID: 11400000, guid: 4c7d1364f7e018f4995885b6dd913974, type: 2}
+  currentVillageLevelData: {fileID: 0}
+--- !u!114 &4413100289201078010
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4324758606244179173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 55589f88fe5ce8e408826f38c3747da4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

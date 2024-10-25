@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8ae86a393f2a9843804a253e3114579, type: 3}
+  m_Name: VillageLvl3
+  m_EditorClassIdentifier: 
+  maxWoods: 50
+  maxStones: 50
+  maxOres: 50
+  maxMeats: 30
+  maxFruits: 30
+  maxWater: 30
+  maxHouses: 15
+  maxHousesLevel: 3
+  villagersStats: {fileID: 11400000, guid: 9b211172082c62b43812d13c0f188246, type: 2}

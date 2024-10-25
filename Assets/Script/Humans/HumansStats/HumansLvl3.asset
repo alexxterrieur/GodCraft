@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9fa9f7f60b728254d98b1507a1a115ed, type: 3}
-  m_Name: HumansGodStats
+  m_Name: HumansLvl3
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentAge: 18
-  lifeEspectancy: 100
-  strenght: 60
-  speed: 20
+  maxHealth: 70
+  currentAge: 0
+  lifeEspectancy: 80
+  strenght: 40
+  speed: 25
