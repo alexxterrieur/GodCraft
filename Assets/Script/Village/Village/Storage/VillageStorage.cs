@@ -24,13 +24,16 @@ public class VillageStorage : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             AddRessources("wood", 10);
-            Debug.Log("test level storage in VillageStorage");
+        }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            AddRessources("stone", 10);
         }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            AddRessources("fruit", 10);
-            Debug.Log("test level storage in VillageStorage");
+            AddRessources("ore", 10);
         }
     }
 
@@ -44,6 +47,35 @@ public class VillageStorage : MonoBehaviour
         maxWater = villageLevel.maxWater;
     }
 
+    public int GetResourceAmount(string resourceType)
+    {
+        switch (resourceType)
+        {
+            case "wood": return currentWoods;
+            case "stone": return currentStones;
+            case "ore": return currentOres;
+            case "meat": return currentMeats;
+            case "fruit": return currentFruits;
+            case "water": return currentWater;
+            default:
+                Debug.Log("Unknown resource type: " + resourceType);
+                return 0;
+        }
+    }
+
+    public void RemoveResource(string resourceType, int amount)
+    {
+        switch (resourceType)
+        {
+            case "wood": currentWoods = Mathf.Max(0, currentWoods - amount); break;
+            case "stone": currentStones = Mathf.Max(0, currentStones - amount); break;
+            case "ore": currentOres = Mathf.Max(0, currentOres - amount); break;
+            case "meat": currentMeats = Mathf.Max(0, currentMeats - amount); break;
+            case "fruit": currentFruits = Mathf.Max(0, currentFruits - amount); break;
+            case "water": currentWater = Mathf.Max(0, currentWater - amount); break;
+        }
+    }
+
     public void AddRessources(string ressourceType, int amount)
     {
         switch (ressourceType)
@@ -54,7 +86,7 @@ public class VillageStorage : MonoBehaviour
                     currentWoods += amount;
                 }
                 else
-                    Debug.Log("StorageFull -> wood");
+                    Debug.Log("StorageFull -> wood" + maxWoods);
                 break;
 
             case ("stone"):

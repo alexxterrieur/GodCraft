@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,5 +18,5 @@ public class VillageLevelData : ScriptableObject
     public int maxHouses;
     public int maxHousesLevel;
     public HumansStats villagersStats;
-    public Dictionary<string, int> ressourcesNeededForNextLevel;
+    public List<RessourceRequirement> ressourcesNeededForNextLevel;
 }

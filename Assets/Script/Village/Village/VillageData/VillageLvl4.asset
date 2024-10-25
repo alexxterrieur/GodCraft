@@ -12,12 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8ae86a393f2a9843804a253e3114579, type: 3}
   m_Name: VillageLvl4
   m_EditorClassIdentifier: 
-  maxWoods: 60
-  maxStones: 60
-  maxOres: 60
-  maxMeats: 40
-  maxFruits: 40
-  maxWater: 40
+  maxWoods: 100
+  maxStones: 80
+  maxOres: 30
+  maxMeats: 350
+  maxFruits: 350
+  maxWater: 350
   maxHouses: 20
   maxHousesLevel: 4
   villagersStats: {fileID: 11400000, guid: 9b211172082c62b43812d13c0f188246, type: 2}
+  ressourcesNeededForNextLevel:
+  - resourceType: wood
+    quantity: 80
+  - resourceType: stone
+    quantity: 70

@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a8ae86a393f2a9843804a253e3114579, type: 3}
-  m_Name: VillageLvl2
+  m_Name: VillageLvl6
   m_EditorClassIdentifier: 
-  maxWoods: 50
-  maxStones: 30
-  maxOres: 20
-  maxMeats: 100
-  maxFruits: 100
-  maxWater: 100
-  maxHouses: 10
-  maxHousesLevel: 2
+  maxWoods: 250
+  maxStones: 200
+  maxOres: 50
+  maxMeats: 900
+  maxFruits: 900
+  maxWater: 900
+  maxHouses: 25
+  maxHousesLevel: 5
   villagersStats: {fileID: 11400000, guid: 9b211172082c62b43812d13c0f188246, type: 2}
   ressourcesNeededForNextLevel:
-  - resourceType: wood
-    quantity: 30
   - resourceType: stone
-    quantity: 10
+    quantity: 150
+  - resourceType: ore
+    quantity: 40
