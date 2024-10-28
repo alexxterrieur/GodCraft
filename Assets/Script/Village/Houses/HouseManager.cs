@@ -4,11 +4,18 @@ using UnityEngine;
 
 public class HouseManager : MonoBehaviour
 {
-    private int currentLevel = 1;
+    public int currentLevel = 1;
+    public SpriteRenderer spriteRenderer;
 
-    public void Upgrade()
+    private void Start()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void Upgrade(Sprite newSprite)
     {
         currentLevel++;
+        spriteRenderer.sprite = newSprite;
     }
 
     public int GetCurrentLevel()

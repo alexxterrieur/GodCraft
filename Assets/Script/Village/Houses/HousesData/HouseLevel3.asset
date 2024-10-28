@@ -16,3 +16,4 @@ MonoBehaviour:
   ressourcesNeededToBuild:
   - resourceType: stone
     quantity: 15
+  sprite: {fileID: 21300000, guid: b7263fa20b561c049901e8a2dee20395, type: 3}

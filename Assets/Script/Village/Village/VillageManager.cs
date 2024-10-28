@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 [Serializable]
 public struct RessourceRequirement
@@ -26,24 +27,30 @@ public class VillageManager : MonoBehaviour
 
     private VillageStorage villageStorage;
 
+    private SpriteRenderer spriteRenderer;
+
+
+    private List<Vector3> occupiedPositions = new List<Vector3>();
+
     private void Start()
     {
         villageStorage = GetComponent<VillageStorage>();
         currentVillageLevelData = villageLevelDatas[0];
         villageStorage.SetMaxStorageValues(currentVillageLevelData);
+
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.I))
         {
-            EvolveVillage();
+            UpgradeVillage();
         }
 
         if (Input.GetKeyDown(KeyCode.S))
         {
             HandleHouseConstruction();
-
         }
     }
 
@@ -80,7 +87,7 @@ public class VillageManager : MonoBehaviour
         }
     }
 
-    public void EvolveVillage()
+    public void UpgradeVillage()
     {
         if (currentLevel < villageLevelDatas.Length)
         {
@@ -91,6 +98,7 @@ public class VillageManager : MonoBehaviour
 
             currentLevel++;
             currentVillageLevelData = villageLevelDatas[currentLevel - 1];
+            spriteRenderer.sprite = currentVillageLevelData.sprite;
             villageStorage.SetMaxStorageValues(currentVillageLevelData);
         }
     }
@@ -138,22 +146,59 @@ public class VillageManager : MonoBehaviour
 
             Vector3 randomPosition = GetRandomPositionAroundVillage();
             GameObject newHouse = Instantiate(housePrefab, randomPosition, Quaternion.identity);
+
             houses.Add(newHouse);
         }
     }
 
+
     private Vector3 GetRandomPositionAroundVillage()
     {
+        Vector3 randomPosition = Vector3.zero;
+
+        float houseSize = 4f;
+
+        for (int i = 0; i < 10; i++)
+        {
+            randomPosition = transform.position + new Vector3(UnityEngine.Random.Range(-10, 10), UnityEngine.Random.Range(-10, 10), 0);
+
+            if (IsPositionValid(randomPosition, houseSize))
+            {
+                return randomPosition;
+            }
+        }
+
         return transform.position;
+    }
+
+    private bool IsPositionValid(Vector3 position, float houseSize)
+    {
+        if (position.x < transform.position.x - 20 || position.x > transform.position.x + 20 || position.y < transform.position.y - 20 || position.y > transform.position.y + 20) //modifier avec l'update de la taille des villages 
+        {
+            return false;
+        }
+
+        foreach (GameObject house in houses)
+        {
+            Vector3 housePosition = house.transform.position;
+
+            if (Mathf.Abs(housePosition.x - position.x) < houseSize && Mathf.Abs(housePosition.y - position.y) < houseSize)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void UpgradeHouses()
     {
         bool allHousesAtMaxLevel = true;
 
-        for (int i = 0; i < houses.Count; i++)
+        for (int i = houses.Count - 1; i >= 0; i--)
         {
-            int currentHouseLevel = houses[i].GetComponent<HouseManager>().GetCurrentLevel();
+            HouseManager currentHouseManager = houses[i].GetComponent<HouseManager>();
+            int currentHouseLevel = currentHouseManager.GetCurrentLevel();
 
             if (currentHouseLevel < currentVillageLevelData.maxHousesLevel)
             {
@@ -166,11 +211,19 @@ public class VillageManager : MonoBehaviour
                         villageStorage.RemoveResource(requirement.resourceType, requirement.quantity);
                     }
 
-                    houses[i].GetComponent<HouseManager>().Upgrade();
-                    Debug.Log("House upgraded to level: " + (currentHouseLevel + 1));
-                }
+                    currentHouseManager.Upgrade(nextLevelData.sprite);
 
-                allHousesAtMaxLevel = false;
+                    Debug.Log("House upgraded to level: " + (currentHouseLevel + 1));
+
+                    allHousesAtMaxLevel = false;
+                    break;
+                }
+                else
+                {
+                    Debug.Log("Not enough resources to upgrade this house further.");
+                    allHousesAtMaxLevel = false;
+                    break;
+                }
             }
         }
 
@@ -179,6 +232,8 @@ public class VillageManager : MonoBehaviour
             Debug.Log("le village doit evoluer");
         }
     }
+
+
 
     public bool CanBuildHouse(HouseLevelData houseLevelData)
     {

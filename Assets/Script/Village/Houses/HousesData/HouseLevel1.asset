@@ -16,3 +16,4 @@ MonoBehaviour:
   ressourcesNeededToBuild:
   - resourceType: wood
     quantity: 5
+  sprite: {fileID: 21300000, guid: ae8af5fb7fa6a3649bbeea2a6b7697a9, type: 3}

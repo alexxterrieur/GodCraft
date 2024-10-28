@@ -19,4 +19,6 @@ public class VillageLevelData : ScriptableObject
     public int maxHousesLevel;
     public HumansStats villagersStats;
     public List<RessourceRequirement> ressourcesNeededForNextLevel;
+
+    public Sprite sprite;
 }

@@ -24,3 +24,4 @@ MonoBehaviour:
   ressourcesNeededForNextLevel:
   - resourceType: wood
     quantity: 20
+  sprite: {fileID: 21300000, guid: 1957ca7acff1c604288e637b4bd91c23, type: 3}

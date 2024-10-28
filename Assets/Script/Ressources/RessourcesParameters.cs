@@ -4,31 +4,31 @@ using System.Collections;
 
 public class ResourceParameters : MonoBehaviour
 {
-    [SerializeField] private string resourceName;
-    [SerializeField] private int resourceAmount;
-    [SerializeField] private float farmTime;
+    public string resourceName;
+    public int resourceAmount = 10;
+    public float harvestTime = 5f;
 
-    private bool isHarvested = false;
-
-    public bool CanHarvest() => !isHarvested;
-
-    public int HarvestResource(NavMeshAgent agent)
+    public IEnumerator FarmResource()
     {
-        if (!isHarvested)
+        // Simulate harvesting time
+        yield return new WaitForSeconds(harvestTime);
+
+        // Return harvested resources and destroy the resource
+        Debug.Log($"{resourceAmount} {resourceName} collected");
+        WorldRessources.instance.UnregisterResource(this);
+        Destroy(gameObject);
+    }
+
+    private void OnEnable()
+    {
+        WorldRessources.instance.RegisterResource(this);
+    }
+
+    private void OnDisable()
+    {
+        if (WorldRessources.instance != null)
         {
-            StartCoroutine(FarmingTime(agent));
-            isHarvested = true;
-            return resourceAmount;
+            WorldRessources.instance.UnregisterResource(this);
         }
-        return 0;
     }
-
-    private IEnumerator FarmingTime(NavMeshAgent agent)
-    {
-        agent.isStopped = true;
-        yield return new WaitForSeconds(farmTime);
-        agent.isStopped = false;
-    }
-
-    public string GetResourceName() => resourceName;
 }

@@ -8,4 +8,5 @@ public class HouseLevelData : ScriptableObject
 {
     public int maxResidentsNumber;
     public List<RessourceRequirement> ressourcesNeededToBuild;
+    public Sprite sprite;
 }

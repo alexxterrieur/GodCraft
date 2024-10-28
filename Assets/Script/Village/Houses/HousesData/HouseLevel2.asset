@@ -18,3 +18,4 @@ MonoBehaviour:
     quantity: 5
   - resourceType: stone
     quantity: 5
+  sprite: {fileID: 21300000, guid: 59b457787e24bee45bc07d0f57e48407, type: 3}

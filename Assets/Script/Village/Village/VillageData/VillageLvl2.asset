@@ -26,3 +26,4 @@ MonoBehaviour:
     quantity: 30
   - resourceType: stone
     quantity: 10
+  sprite: {fileID: 21300000, guid: c63c0829d74a9c640a249793998c9132, type: 3}

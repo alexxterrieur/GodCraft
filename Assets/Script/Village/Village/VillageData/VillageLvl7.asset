@@ -26,3 +26,4 @@ MonoBehaviour:
     quantity: 200
   - resourceType: ore
     quantity: 65
+  sprite: {fileID: 21300000, guid: 03126978dc0d3864f95153fed54d3470, type: 3}
