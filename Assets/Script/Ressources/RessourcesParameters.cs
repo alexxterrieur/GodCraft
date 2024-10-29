@@ -1,4 +1,3 @@
-using UnityEngine.AI;
 using UnityEngine;
 using System.Collections;
 
@@ -8,12 +7,15 @@ public class ResourceParameters : MonoBehaviour
     public int resourceAmount = 10;
     public float harvestTime = 5f;
 
-    public IEnumerator FarmResource()
+    public bool IsBeingHarvested { get; private set; } = false;
+
+    public IEnumerator FarmResource(HumansAI human)
     {
-        // Simulate harvesting time
+        IsBeingHarvested = true; 
         yield return new WaitForSeconds(harvestTime);
 
-        // Return harvested resources and destroy the resource
+        //Give harvested resources and destroy the resource
+        //humanInventory.Add(resourceName, resourceAmount);
         Debug.Log($"{resourceAmount} {resourceName} collected");
         WorldRessources.instance.UnregisterResource(this);
         Destroy(gameObject);

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+// Struct to hold resource requirements for building or upgrading
 [Serializable]
 public struct RessourceRequirement
 {
@@ -11,48 +12,40 @@ public struct RessourceRequirement
     public int quantity;
 }
 
-
 public class VillageManager : MonoBehaviour
 {
+    //List of villagers in the village
     public List<HumanVillageInfos> villagers = new List<HumanVillageInfos>();
-    private bool villageInitialized = false;
+    private bool villageInitialized = false;    
 
-    private int currentLevel = 1;
+    //Village level data for different stages
     [SerializeField] private VillageLevelData[] villageLevelDatas = new VillageLevelData[5];
     private VillageLevelData currentVillageLevelData;
 
+    //House level data and prefab
     [SerializeField] private HouseLevelData[] houseLevelDatas;
     [SerializeField] private GameObject housePrefab;
     private List<GameObject> houses = new List<GameObject>();
+    private int currentLevel = 1;
 
     private VillageStorage villageStorage;
-
     private SpriteRenderer spriteRenderer;
-
-
     private List<Vector3> occupiedPositions = new List<Vector3>();
+    private bool everythingMaxLevelInVillage = false;
 
     private void Start()
     {
+        // Initialize village storage and level data
         villageStorage = GetComponent<VillageStorage>();
         currentVillageLevelData = villageLevelDatas[0];
         villageStorage.SetMaxStorageValues(currentVillageLevelData);
 
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Start house construction management
+        InvokeRepeating("HandleHouseConstruction", 5f, 2f);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            UpgradeVillage();
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            HandleHouseConstruction();
-        }
-    }
 
     public void InitializeVillage(List<HumanVillageInfos> initialVillagers)
     {
@@ -89,17 +82,28 @@ public class VillageManager : MonoBehaviour
 
     public void UpgradeVillage()
     {
+        foreach (var requirement in currentVillageLevelData.ressourcesNeededForNextLevel)
+        {
+            if (villageStorage.GetResourceAmount(requirement.resourceType) < requirement.quantity)
+            {
+                Debug.Log("Not enough resources to upgrade the village.");
+                return;
+            }
+        }
+
+        foreach (var requirement in currentVillageLevelData.ressourcesNeededForNextLevel)
+        {
+            villageStorage.RemoveResource(requirement.resourceType, requirement.quantity);
+        }
+
+        //Upgrade village level/ update storage values/ change sprite
         if (currentLevel < villageLevelDatas.Length)
         {
-            foreach (var requirement in currentVillageLevelData.ressourcesNeededForNextLevel)
-            {
-                villageStorage.RemoveResource(requirement.resourceType, requirement.quantity);
-            }
-
             currentLevel++;
             currentVillageLevelData = villageLevelDatas[currentLevel - 1];
             spriteRenderer.sprite = currentVillageLevelData.sprite;
             villageStorage.SetMaxStorageValues(currentVillageLevelData);
+            everythingMaxLevelInVillage = false;
         }
     }
 
@@ -108,11 +112,12 @@ public class VillageManager : MonoBehaviour
         return villagers.Count;
     }
 
+    // Designate a new chief for the village
     public void DesignateNewChief()
     {
         if (villagers.Count > 0)
         {
-            HumanVillageInfos newChief = villagers[1];
+            HumanVillageInfos newChief = villagers[1]; //Choose a villager as chief
             newChief.isVillageChief = true;
             Debug.Log(newChief.name + " is the new village chief.");
         }
@@ -129,11 +134,16 @@ public class VillageManager : MonoBehaviour
         {
             UpgradeHouses();
         }
+
+        //If all houses are built and at max level, upgrade the village
+        if (houses.Count == currentVillageLevelData.maxHouses && everythingMaxLevelInVillage)
+        {
+            UpgradeVillage();
+        }
     }
 
     private void BuildHouse()
     {
-        //Get data for the base house level
         HouseLevelData houseLevelData = houseLevelDatas[0];
 
         //Check if we have enough resources to build a new house
@@ -151,11 +161,9 @@ public class VillageManager : MonoBehaviour
         }
     }
 
-
     private Vector3 GetRandomPositionAroundVillage()
     {
         Vector3 randomPosition = Vector3.zero;
-
         float houseSize = 4f;
 
         for (int i = 0; i < 10; i++)
@@ -178,6 +186,7 @@ public class VillageManager : MonoBehaviour
             return false;
         }
 
+        //Check for overlaps with existing houses
         foreach (GameObject house in houses)
         {
             Vector3 housePosition = house.transform.position;
@@ -193,17 +202,17 @@ public class VillageManager : MonoBehaviour
 
     private void UpgradeHouses()
     {
-        bool allHousesAtMaxLevel = true;
-
-        for (int i = houses.Count - 1; i >= 0; i--)
+        for (int i = 0; i < houses.Count; i++)
         {
             HouseManager currentHouseManager = houses[i].GetComponent<HouseManager>();
             int currentHouseLevel = currentHouseManager.GetCurrentLevel();
 
+            //Check if the house can be upgraded according to village level
             if (currentHouseLevel < currentVillageLevelData.maxHousesLevel)
             {
                 HouseLevelData nextLevelData = houseLevelDatas[currentHouseLevel];
 
+                //Check if the resources needed are available
                 if (CanBuildHouse(nextLevelData))
                 {
                     foreach (var requirement in nextLevelData.ressourcesNeededToBuild)
@@ -213,27 +222,17 @@ public class VillageManager : MonoBehaviour
 
                     currentHouseManager.Upgrade(nextLevelData.sprite);
 
-                    Debug.Log("House upgraded to level: " + (currentHouseLevel + 1));
-
-                    allHousesAtMaxLevel = false;
-                    break;
-                }
-                else
-                {
-                    Debug.Log("Not enough resources to upgrade this house further.");
-                    allHousesAtMaxLevel = false;
-                    break;
+                    return;
                 }
             }
         }
 
-        if (allHousesAtMaxLevel)
+        //If all houses are at max level, set a bool to true to allow village to upgrade
+        if (houses.TrueForAll(h => h.GetComponent<HouseManager>().GetCurrentLevel() >= currentVillageLevelData.maxHousesLevel))
         {
-            Debug.Log("le village doit evoluer");
+            everythingMaxLevelInVillage = true;
         }
     }
-
-
 
     public bool CanBuildHouse(HouseLevelData houseLevelData)
     {

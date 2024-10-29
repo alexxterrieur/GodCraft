@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -169,7 +170,6 @@ public class WorldRessources : MonoBehaviour
     public ResourceParameters FindNearestResource(Vector3 position, string resourceType)
     {
         Vector2Int gridPosition = GetGridPosition(position);
-
         List<ResourceParameters> nearbyResources = new List<ResourceParameters>();
 
         for (int x = -1; x <= 1; x++)
@@ -179,9 +179,9 @@ public class WorldRessources : MonoBehaviour
                 Vector2Int gridToCheck = new Vector2Int(gridPosition.x + x, gridPosition.y + y);
                 if (resourceGrid.ContainsKey(gridToCheck))
                 {
-                    foreach (var resource in resourceGrid[gridToCheck])
+                    foreach (ResourceParameters resource in resourceGrid[gridToCheck])
                     {
-                        if (resource.resourceName == resourceType)
+                        if (resource.resourceName.Equals(resourceType, StringComparison.OrdinalIgnoreCase))
                         {
                             nearbyResources.Add(resource);
                         }
@@ -205,6 +205,7 @@ public class WorldRessources : MonoBehaviour
 
         return nearestResource;
     }
+
 
     private Vector2Int GetGridPosition(Vector3 worldPosition)
     {

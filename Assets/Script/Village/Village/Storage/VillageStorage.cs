@@ -23,17 +23,17 @@ public class VillageStorage : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            AddRessources("wood", 10);
+            AddRessources("wood", 5);
         }
 
         if (Input.GetKeyDown(KeyCode.T))
         {
-            AddRessources("stone", 10);
+            AddRessources("stone", 5);
         }
 
         if (Input.GetKeyDown(KeyCode.E))
         {
-            AddRessources("ore", 10);
+            AddRessources("ore", 5);
         }
     }
 
