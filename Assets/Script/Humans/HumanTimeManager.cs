@@ -16,6 +16,15 @@ public class HumanTimeManager : MonoBehaviour
     private LifeManager lifeManager;
     [SerializeField] private HumansStats defaultStats;
 
+    // Reproduction variables
+    [SerializeField] private GameObject babyHuman;
+    [SerializeField] private int maxChildrenNumber;
+    [SerializeField] private int menopauseAge;
+
+    private float timeUntilNextBirth;
+    private int childrenBorn = 0;
+    private HumanVillageInfos humanVillageInfo;
+
     private void Awake()
     {
         timeManager = GameObject.FindWithTag("Managers").GetComponent<TimeManager>();
@@ -26,11 +35,21 @@ public class HumanTimeManager : MonoBehaviour
     private void Start()
     {
         humanAI = GetComponent<HumansAI>();
-        
         birthday = timeManager.GetDate();
         lifeManager = GetComponent<LifeManager>();
 
+        if (humanGetStats.spawnedByGod)
+        {
+            StartCoroutine(DelayedAdulthoodCheck());
+        }
+
         StartCoroutine(TimeBasedUpdates());
+    }
+
+    private IEnumerator DelayedAdulthoodCheck()
+    {
+        yield return new WaitForSeconds(1f);
+        CheckAndSetAdulthood();
     }
 
     IEnumerator TimeBasedUpdates()
@@ -47,19 +66,7 @@ public class HumanTimeManager : MonoBehaviour
 
             if (currentAge == 18 && currentMonth == birthday.month && !humanGetStats.isAdult)
             {
-                Debug.Log(gameObject.name + " is now an adult.");
-                humanGetStats.isAdult = true;
-
-                //Check if belongs to village and set stats
-                HumanVillageInfos humanVillageInfo = GetComponent<HumanVillageInfos>();
-                if (humanVillageInfo != null && humanVillageInfo.belongsToVillage && humanVillageInfo.village != null)
-                {
-                    humanGetStats.SetNewStats(humanVillageInfo.village.GetVillagersStats());
-                }
-                else
-                {
-                    humanGetStats.SetNewStats(defaultStats);
-                }
+                CheckAndSetAdulthood();
             }
 
             if (currentAge >= humanGetStats.GetLifeExpectancy())
@@ -79,6 +86,89 @@ public class HumanTimeManager : MonoBehaviour
             }
 
             humanAI.CheckNeeds(hunger, thirst);
+
+            // Vérification de la reproduction
+            if (humanGetStats.isAdult && currentAge < menopauseAge)
+            {
+                timeUntilNextBirth -= 1;
+                if (timeUntilNextBirth <= 0)
+                {
+                    TryReproduce(currentAge);
+                }
+            }
+        }
+    }
+
+    private bool CheckAndSetAdulthood()
+    {
+        Debug.Log(gameObject.name + " is now an adult.");
+        humanGetStats.isAdult = true;
+
+        //Check if belongs to village and set stats (if not spawned by god)
+        humanVillageInfo = GetComponent<HumanVillageInfos>();
+        if (humanVillageInfo != null && humanVillageInfo.belongsToVillage && humanVillageInfo.village != null)
+        {
+            humanGetStats.SetNewStats(humanVillageInfo.village.GetVillagersStats());
+        }
+        else
+        {
+            humanGetStats.SetNewStats(defaultStats);
+        }
+
+        InitializeReproduction();
+
+        return true;
+    }
+
+    private void InitializeReproduction()
+    {
+        childrenBorn = 0;
+        timeUntilNextBirth = GetRandomBirthInterval();
+    }
+
+    private float GetRandomBirthInterval()
+    {
+        int startAge = 20;
+
+        //Calculate birth interval
+        float totalDuration = ((menopauseAge - startAge) * 12 * timeManager.monthDuration); //in months
+        float minInterval = 12 * timeManager.monthDuration; //1 year minimum
+
+        return Random.Range(minInterval, totalDuration / (maxChildrenNumber - childrenBorn));
+    }
+
+    private void TryReproduce(int currentAge)
+    {
+        if (humanVillageInfo != null && humanVillageInfo.belongsToVillage && humanVillageInfo.village != null)
+        {
+            var village = humanVillageInfo.village;
+
+            //Find a partner in the village
+            var partner = village.villagers.Find(h => h != humanVillageInfo && h.GetComponent<HumanTimeManager>().humanGetStats.isAdult);
+
+            if (partner != null && babyHuman != null)
+            {
+                Debug.Log(gameObject.name + " and " + partner.name + " are reproducing.");
+
+                //Instantiate baby and set village infos
+                GameObject newBaby = Instantiate(babyHuman, transform.position, Quaternion.identity);
+                var babyVillageInfo = newBaby.GetComponent<HumanVillageInfos>();
+                babyVillageInfo.village = village;
+
+                village.AddVillager(babyVillageInfo);
+
+                childrenBorn++;
+
+                //Set a new time until nex birth
+                if (childrenBorn < maxChildrenNumber)
+                {
+                    timeUntilNextBirth = GetRandomBirthInterval();
+                }
+                else
+                {
+                    timeUntilNextBirth = float.MaxValue; //Stop births
+                }
+            }
         }
     }
 
@@ -86,7 +176,4 @@ public class HumanTimeManager : MonoBehaviour
     {
         humanAI.UpdateAgentSpeed(humanGetStats.currentStats.speed * speedMultiplier);
     }
-
-    //public void UpdateHunger(float amount) => hunger += amount;
-    //public void UpdateThirst(float amount) => thirst += amount;
 }

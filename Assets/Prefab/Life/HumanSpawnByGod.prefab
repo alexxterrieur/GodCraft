@@ -258,9 +258,12 @@ MonoBehaviour:
   timeManager: {fileID: 0}
   hunger: 150
   thirst: 100
-  survivalDamages: 5
+  survivalDamages: 0
   isBusy: 0
-  defaultStats: {fileID: 0}
+  defaultStats: {fileID: 11400000, guid: 9b211172082c62b43812d13c0f188246, type: 2}
+  babyHuman: {fileID: 3103709489662281376, guid: c5f5ad9dffaecf841ac8b9d5fea396b8, type: 3}
+  maxChildrenNumber: 3
+  menopauseAge: 29
 --- !u!114 &3360702845505956183
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275,3 +278,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentStats: {fileID: 11400000, guid: 8cdc188f2a0bd7d4b95b5d550566c1bc, type: 2}
   spawnedByGod: 1
+  isAdult: 0

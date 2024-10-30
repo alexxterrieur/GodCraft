@@ -12,7 +12,7 @@ public class HumanGetStats : MonoBehaviour
     private float speed;
 
     private LifeManager lifeManager;
-    [SerializeField] private bool spawnedByGod;
+    public bool spawnedByGod;
     public bool isAdult = false;
 
     private void Awake()
