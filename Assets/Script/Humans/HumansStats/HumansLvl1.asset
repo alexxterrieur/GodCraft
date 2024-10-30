@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HumansLvl1
   m_EditorClassIdentifier: 
   maxHealth: 50
-  currentAge: 0
+  currentAge: 18
   lifeEspectancy: 70
   strenght: 20
   speed: 1.5

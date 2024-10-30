@@ -3,10 +3,9 @@ using UnityEngine;
 
 public class HumanTimeManager : MonoBehaviour
 {
-    public HumansStats stats;
+    private HumanGetStats humanGetStats;
     public TimeManager timeManager;
     private (int year, int month) birthday;
-    private bool isAdult;
     private HumansAI humanAI;
 
     public float hunger;
@@ -15,11 +14,13 @@ public class HumanTimeManager : MonoBehaviour
     public bool isBusy = false;
 
     private LifeManager lifeManager;
+    [SerializeField] private HumansStats defaultStats;
 
     private void Awake()
     {
         timeManager = GameObject.FindWithTag("Managers").GetComponent<TimeManager>();
         timeManager.RegisterHuman(this);
+        humanGetStats = GetComponent<HumanGetStats>();
     }
 
     private void Start()
@@ -42,17 +43,28 @@ public class HumanTimeManager : MonoBehaviour
             thirst -= 5f;
 
             (int currentYear, int currentMonth) = timeManager.GetDate();
-            stats.currentAge = currentYear - birthday.year;
+            int currentAge = currentYear - birthday.year;
 
-            if (stats.currentAge == 18 && currentMonth == birthday.month)
+            if (currentAge == 18 && currentMonth == birthday.month && !humanGetStats.isAdult)
             {
-                print(gameObject.name + " human is 18");
-                isAdult = true;
+                Debug.Log(gameObject.name + " is now an adult.");
+                humanGetStats.isAdult = true;
+
+                //Check if belongs to village and set stats
+                HumanVillageInfos humanVillageInfo = GetComponent<HumanVillageInfos>();
+                if (humanVillageInfo != null && humanVillageInfo.belongsToVillage && humanVillageInfo.village != null)
+                {
+                    humanGetStats.SetNewStats(humanVillageInfo.village.GetVillagersStats());
+                }
+                else
+                {
+                    humanGetStats.SetNewStats(defaultStats);
+                }
             }
 
-            if (stats.currentAge == stats.lifeEspectancy)
+            if (currentAge >= humanGetStats.GetLifeExpectancy())
             {
-                print(gameObject.name + " lifeEsperancy reach");
+                Debug.Log(gameObject.name + " has reached life expectancy.");
                 lifeManager.TakeDamage(lifeManager.currentHealth);
             }
 
@@ -61,17 +73,18 @@ public class HumanTimeManager : MonoBehaviour
                 humanAI.CheckNeeds(hunger, thirst);
             }
 
-            //Damages
             if (hunger <= 0 || thirst <= 0)
             {
                 lifeManager.TakeDamage(survivalDamages);
             }
+
+            humanAI.CheckNeeds(hunger, thirst);
         }
     }
 
     public void SetHumanSpeed(float speedMultiplier)
     {
-        humanAI.UpdateAgentSpeed(stats.speed * speedMultiplier);
+        humanAI.UpdateAgentSpeed(humanGetStats.currentStats.speed * speedMultiplier);
     }
 
     //public void UpdateHunger(float amount) => hunger += amount;

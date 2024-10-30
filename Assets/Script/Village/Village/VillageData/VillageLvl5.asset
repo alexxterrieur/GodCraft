@@ -20,7 +20,7 @@ MonoBehaviour:
   maxWater: 500
   maxHouses: 25
   maxHousesLevel: 5
-  villagersStats: {fileID: 11400000, guid: 9b211172082c62b43812d13c0f188246, type: 2}
+  villagersStats: {fileID: 11400000, guid: 5dce4f6380e412b48a92f3d0a671fd7c, type: 2}
   ressourcesNeededForNextLevel:
   - resourceType: stone
     quantity: 90

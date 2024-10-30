@@ -47,7 +47,8 @@ public class VillageManager : MonoBehaviour
         timeManager = GameObject.FindWithTag("Managers").GetComponent<TimeManager>();
 
         // Start house construction management
-        InvokeRepeating("HandleHouseConstruction", 5f, timeManager.monthDuration / timeManager.timeSpeed);
+        //InvokeRepeating("HandleHouseConstruction", 5f, timeManager.monthDuration / timeManager.timeSpeed);
+        StartCoroutine(HandleHouseConstruction());
     }
 
 
@@ -86,29 +87,41 @@ public class VillageManager : MonoBehaviour
 
     public void UpgradeVillage()
     {
-        foreach (var requirement in currentVillageLevelData.ressourcesNeededForNextLevel)
+        if(villageLevelDatas[currentLevel - 1] != villageLevelDatas[villageLevelDatas.Length - 1])
         {
-            if (villageStorage.GetResourceAmount(requirement.resourceType) < requirement.quantity)
+            foreach (var requirement in currentVillageLevelData.ressourcesNeededForNextLevel)
             {
-                Debug.Log("Not enough resources to upgrade the village.");
-                return;
+                if (villageStorage.GetResourceAmount(requirement.resourceType) < requirement.quantity)
+                {
+                    Debug.Log("Not enough resources to upgrade the village.");
+                    return;
+                }
+                else
+                {
+                    foreach (var ressources in currentVillageLevelData.ressourcesNeededForNextLevel)
+                    {
+                        villageStorage.RemoveResource(requirement.resourceType, requirement.quantity);
+                    }
+
+                    //Upgrade village level/ update storage values/ change sprite
+                    if (currentLevel < villageLevelDatas.Length)
+                    {
+                        currentLevel++;
+                        currentVillageLevelData = villageLevelDatas[currentLevel - 1];
+                        spriteRenderer.sprite = currentVillageLevelData.sprite;
+                        villageStorage.SetMaxStorageValues(currentVillageLevelData);
+                        everythingMaxLevelInVillage = false;
+
+                        //update villagers stats
+                        foreach (var human in villagers)
+                        {
+                            HumanGetStats humanGetStats = human.GetComponent<HumanGetStats>();
+                            humanGetStats.SetNewStats(currentVillageLevelData.villagersStats);
+                        }
+                    }
+                }
             }
-        }
-
-        foreach (var requirement in currentVillageLevelData.ressourcesNeededForNextLevel)
-        {
-            villageStorage.RemoveResource(requirement.resourceType, requirement.quantity);
-        }
-
-        //Upgrade village level/ update storage values/ change sprite
-        if (currentLevel < villageLevelDatas.Length)
-        {
-            currentLevel++;
-            currentVillageLevelData = villageLevelDatas[currentLevel - 1];
-            spriteRenderer.sprite = currentVillageLevelData.sprite;
-            villageStorage.SetMaxStorageValues(currentVillageLevelData);
-            everythingMaxLevelInVillage = false;
-        }
+        }        
     }
 
     public int GetVillagerCount()
@@ -127,23 +140,30 @@ public class VillageManager : MonoBehaviour
         }
     }
 
-    private void HandleHouseConstruction()
+    IEnumerator HandleHouseConstruction()
     {
-        //Check if we need to build or upgrade houses
-        if (houses.Count < currentVillageLevelData.maxHouses)
+        while (true)
         {
-            BuildHouse();
-        }
-        else
-        {
-            UpgradeHouses();
-        }
+            yield return new WaitForSeconds(timeManager.monthDuration / timeManager.timeSpeed);
 
-        //If all houses are built and at max level, upgrade the village
-        if (houses.Count == currentVillageLevelData.maxHouses && everythingMaxLevelInVillage)
-        {
-            UpgradeVillage();
-        }
+            print("yveifviefb");
+
+            //Check if we need to build or upgrade houses
+            if (houses.Count < currentVillageLevelData.maxHouses)
+            {
+                BuildHouse();
+            }
+            else
+            {
+                UpgradeHouses();
+            }
+
+            //If all houses are built and at max level, upgrade the village
+            if (houses.Count == currentVillageLevelData.maxHouses && everythingMaxLevelInVillage)
+            {
+                UpgradeVillage();
+            }
+        }        
     }
 
     private void BuildHouse()
@@ -250,5 +270,10 @@ public class VillageManager : MonoBehaviour
             }
         }
         return true;
+    }
+
+    public HumansStats GetVillagersStats()
+    {
+        return currentVillageLevelData.villagersStats;
     }
 }

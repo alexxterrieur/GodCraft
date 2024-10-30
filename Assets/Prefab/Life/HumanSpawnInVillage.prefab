@@ -18,8 +18,9 @@ GameObject:
   - component: {fileID: 2423815541209774348}
   - component: {fileID: 8046546689395091211}
   - component: {fileID: 2815923361273905403}
+  - component: {fileID: -2163574461439559208}
   m_Layer: 0
-  m_Name: HumanMVP
+  m_Name: HumanSpawnInVillage
   m_TagString: Human
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.15671764, g: 0.9547169, b: 0.19164898, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -254,7 +255,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab715553ed30c5e46a879bfde1c68113, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats: {fileID: 11400000, guid: 8cdc188f2a0bd7d4b95b5d550566c1bc, type: 2}
+  timeManager: {fileID: 0}
   hunger: 150
   thirst: 100
   survivalDamages: 5
+  isBusy: 0
+--- !u!114 &-2163574461439559208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3103709489662281376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd21dbcdf12d10448937aa4c36d480b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentStats: {fileID: 11400000, guid: b8195bcccfed4fb40a2f0afc575274f0, type: 2}
