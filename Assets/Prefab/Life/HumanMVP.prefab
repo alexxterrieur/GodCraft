@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 6726688573979947325}
   - component: {fileID: 2423815541209774348}
   - component: {fileID: 8046546689395091211}
+  - component: {fileID: 2815923361273905403}
   m_Layer: 0
   m_Name: HumanMVP
   m_TagString: Human
@@ -125,11 +126,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84fcc39357d59e64091cc0757573431a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stats: {fileID: 11400000, guid: 8cdc188f2a0bd7d4b95b5d550566c1bc, type: 2}
-  timeManager: {fileID: 0}
-  hunger: 150
-  thirst: 100
-  survivalDamages: 5
   agent: {fileID: 0}
 --- !u!114 &1847647424535882185
 MonoBehaviour:
@@ -157,7 +153,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13cc5437774f5ac4a9a698d327024778, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  humansInTrigger: 1
   numberOfHumansNeededToCreateVillage: 3
   villageMainBuildingPrefab: {fileID: 4324758606244179173, guid: 26c160953f0f9464784781ae22d48b15, type: 3}
 --- !u!61 &6726688573979947325
@@ -247,3 +242,19 @@ MonoBehaviour:
   belongsToVillage: 0
   isVillageChief: 0
   village: {fileID: 0}
+--- !u!114 &2815923361273905403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3103709489662281376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ab715553ed30c5e46a879bfde1c68113, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  stats: {fileID: 11400000, guid: 8cdc188f2a0bd7d4b95b5d550566c1bc, type: 2}
+  hunger: 150
+  thirst: 100
+  survivalDamages: 5

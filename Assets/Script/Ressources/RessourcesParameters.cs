@@ -9,7 +9,7 @@ public class ResourceParameters : MonoBehaviour
 
     public bool IsBeingHarvested { get; private set; } = false;
 
-    public IEnumerator FarmResource(HumansAI human)
+    public IEnumerator FarmResource()
     {
         IsBeingHarvested = true; 
         yield return new WaitForSeconds(harvestTime);

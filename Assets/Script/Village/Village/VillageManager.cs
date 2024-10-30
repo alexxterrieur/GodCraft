@@ -33,6 +33,8 @@ public class VillageManager : MonoBehaviour
     private List<Vector3> occupiedPositions = new List<Vector3>();
     private bool everythingMaxLevelInVillage = false;
 
+    private TimeManager timeManager;
+
     private void Start()
     {
         // Initialize village storage and level data
@@ -42,8 +44,10 @@ public class VillageManager : MonoBehaviour
 
         spriteRenderer = GetComponent<SpriteRenderer>();
 
+        timeManager = GameObject.FindWithTag("Managers").GetComponent<TimeManager>();
+
         // Start house construction management
-        InvokeRepeating("HandleHouseConstruction", 5f, 2f);
+        InvokeRepeating("HandleHouseConstruction", 5f, timeManager.monthDuration / timeManager.timeSpeed);
     }
 
 

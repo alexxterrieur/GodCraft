@@ -10,7 +10,7 @@ public class TreeParameters : MonoBehaviour
     public float foodCooldown;
     public float woodGiven;
 
-    public void HarvestFood(HumansAI human)
+    public void HarvestFood(HumanTimeManager human)
     {
         if(canGiveFood && !foodHarvested)
         {

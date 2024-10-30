@@ -6,15 +6,27 @@ using UnityEngine;
 public class TimeManager : MonoBehaviour
 {
     [Header("World Speed")]
-    public int timeSpeed;
-    public float monthDuration;
+    public int timeSpeed = 1;
+    public float monthDuration = 30f;
     private int currentYear;
     private int currentMonth;
     public TMP_Text timeDisplay;
 
+    // List to track all active humans
+    private List<HumanTimeManager> humans = new List<HumanTimeManager>();
+
     private void Start()
     {
         StartCoroutine(UpdateTime());
+    }
+
+    // Register a new human in the list
+    public void RegisterHuman(HumanTimeManager human)
+    {
+        if (!humans.Contains(human))
+        {
+            humans.Add(human);
+        }
     }
 
     IEnumerator UpdateTime()
@@ -36,12 +48,17 @@ public class TimeManager : MonoBehaviour
 
     void UpdateTimeUI()
     {
-        timeDisplay.text = currentYear + " years  " + currentMonth + " months";
+        timeDisplay.text = $"{currentYear} years  {currentMonth} months";
     }
 
-    public void ChangeTimeSpeed(int _timeSpeed)
+    public void ChangeTimeSpeed(int newTimeSpeed)
     {
-        timeSpeed = _timeSpeed;
+        timeSpeed = newTimeSpeed;
+
+        foreach (var human in humans)
+        {
+            human.SetHumanSpeed(newTimeSpeed);
+        }
     }
 
     public (int year, int month) GetDate()

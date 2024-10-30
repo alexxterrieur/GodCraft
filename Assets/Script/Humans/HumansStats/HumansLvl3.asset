@@ -16,4 +16,4 @@ MonoBehaviour:
   currentAge: 0
   lifeEspectancy: 80
   strenght: 40
-  speed: 25
+  speed: 2.5

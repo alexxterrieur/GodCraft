@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LifeManager : MonoBehaviour
 {
-    [SerializeField] private int maxHealth;
+    public int maxHealth;
     public int currentHealth;
 
     private void Start()
