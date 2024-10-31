@@ -150,12 +150,8 @@ public class HumanTimeManager : MonoBehaviour
             {
                 Debug.Log(gameObject.name + " and " + partner.name + " are reproducing.");
 
-                //Instantiate baby and set village infos
                 GameObject newBaby = Instantiate(babyHuman, transform.position, Quaternion.identity);
-                var babyVillageInfo = newBaby.GetComponent<HumanVillageInfos>();
-                babyVillageInfo.village = village;
-
-                village.AddVillager(babyVillageInfo);
+                InitializeBaby(newBaby, village, gameObject, partner.gameObject);
 
                 childrenBorn++;
 
@@ -170,6 +166,29 @@ public class HumanTimeManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    private void InitializeBaby(GameObject baby, VillageManager village, GameObject father, GameObject mother)
+    {
+        var babyStats = baby.GetComponent<HumanGetStats>();
+        var babyVillageInfo = baby.GetComponent<HumanVillageInfos>();
+        var babyLifeManager = baby.GetComponent<LifeManager>();
+
+        //Use default stats
+        babyStats.isAdult = false;
+        babyStats.spawnedByGod = false;
+        babyStats.SetNewStats(defaultStats);
+
+        //Add baby to village
+        village.AddVillager(babyVillageInfo);
+
+        var babyTimeManager = baby.GetComponent<HumanTimeManager>();
+        babyTimeManager.hunger = 150f;
+        babyTimeManager.thirst = 100f;
+
+        //Random color
+        Color skinColor = Color.Lerp(father.GetComponent<SpriteRenderer>().color, mother.GetComponent<SpriteRenderer>().color, 0.5f);
+        baby.GetComponent<SpriteRenderer>().color = skinColor;
     }
 
     public void SetHumanSpeed(float speedMultiplier)

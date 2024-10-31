@@ -262,8 +262,8 @@ MonoBehaviour:
   isBusy: 0
   defaultStats: {fileID: 11400000, guid: 9b211172082c62b43812d13c0f188246, type: 2}
   babyHuman: {fileID: 3103709489662281376}
-  maxChildrenNumber: 3
-  menopause: 30
+  maxChildrenNumber: 2
+  menopauseAge: 40
 --- !u!114 &-2163574461439559208
 MonoBehaviour:
   m_ObjectHideFlags: 0

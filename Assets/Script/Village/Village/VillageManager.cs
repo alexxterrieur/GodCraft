@@ -146,8 +146,6 @@ public class VillageManager : MonoBehaviour
         {
             yield return new WaitForSeconds(timeManager.monthDuration / timeManager.timeSpeed);
 
-            print("yveifviefb");
-
             //Check if we need to build or upgrade houses
             if (houses.Count < currentVillageLevelData.maxHouses)
             {

@@ -57,6 +57,11 @@ public class SpawnLife : MonoBehaviour
         }
     }
 
+    public void SelectGameObject(GameObject selectedGameObject)
+    {
+        gameObjectToSpawn  = selectedGameObject;
+    }
+
     private bool IsPointerOverUI()
     {
         return EventSystem.current.IsPointerOverGameObject();
