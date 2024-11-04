@@ -256,7 +256,7 @@ public class VillageManager : MonoBehaviour
         }
     }
 
-    public bool CanBuildHouse(HouseLevelData houseLevelData)
+    private bool CanBuildHouse(HouseLevelData houseLevelData)
     {
         foreach (var requirement in houseLevelData.ressourcesNeededToBuild)
         {
@@ -273,5 +273,10 @@ public class VillageManager : MonoBehaviour
     public HumansStats GetVillagersStats()
     {
         return currentVillageLevelData.villagersStats;
+    }
+
+    public VillageStorage GetVillageStorage()
+    {
+        return gameObject.GetComponent<VillageStorage>();
     }
 }

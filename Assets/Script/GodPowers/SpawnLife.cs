@@ -35,11 +35,13 @@ public class SpawnLife : MonoBehaviour
 
     private void SpawnGameObject()
     {
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0;
-        GameObject agent = Instantiate(gameObjectToSpawn, mousePosition, Quaternion.identity);
-        agent.GetComponent<NavMeshAgent>().updateRotation = false;
-
+        if (gameObjectToSpawn != null)
+        {
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePosition.z = 0;
+            GameObject agent = Instantiate(gameObjectToSpawn, mousePosition, Quaternion.identity);
+            agent.GetComponent<NavMeshAgent>().updateRotation = false;
+        }
     }
 
     private IEnumerator SpawnGameObjects()

@@ -10,7 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2718434535697450487}
   - component: {fileID: 8195712216034556842}
-  - component: {fileID: -2424068942873753113}
+  - component: {fileID: 2269881419701583929}
+  - component: {fileID: 1474521395756217769}
   m_Layer: 0
   m_Name: palmTree
   m_TagString: Untagged
@@ -85,7 +86,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-2424068942873753113
+--- !u!114 &2269881419701583929
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,11 +95,28 @@ MonoBehaviour:
   m_GameObject: {fileID: 2819080875666936401}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8f4d15eb49faaa49bbff0b80edecc5d, type: 3}
+  m_Script: {fileID: 11500000, guid: 0868e9a1fc537f044be54ae9c1c96132, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canGiveFood: 1
-  foodGiven: 45
-  foodHarvested: 0
-  foodCooldown: 3
-  woodGiven: 20
+  resourceName: fruit
+  resourceAmount: 3
+  harvestTime: 1.2
+  canRespawn: 1
+  resourceCooldown: 2
+--- !u!114 &1474521395756217769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2819080875666936401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0868e9a1fc537f044be54ae9c1c96132, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resourceName: wood
+  resourceAmount: 15
+  harvestTime: 3.5
+  canRespawn: 0
+  resourceCooldown: 0

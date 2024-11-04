@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 8046546689395091211}
   - component: {fileID: 2815923361273905403}
   - component: {fileID: -2163574461439559208}
+  - component: {fileID: 2962747619533547007}
   m_Layer: 0
   m_Name: HumanSpawnInVillage
   m_TagString: Human
@@ -279,3 +280,21 @@ MonoBehaviour:
   currentStats: {fileID: 11400000, guid: b8195bcccfed4fb40a2f0afc575274f0, type: 2}
   spawnedByGod: 0
   isAdult: 0
+--- !u!114 &2962747619533547007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3103709489662281376}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ca854ab73015dd4fb0849d53778917c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentWoods: 0
+  currentStones: 0
+  currentOres: 0
+  currentFruits: 0
+  currentMeats: 0
+  currentWaterStack: 0

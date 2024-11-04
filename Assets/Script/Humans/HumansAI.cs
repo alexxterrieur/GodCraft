@@ -5,12 +5,14 @@ using UnityEngine.AI;
 
 public class HumansAI : MonoBehaviour
 {
-    private enum HumanState { Idle, SearchingFood, SearchingWater }
+    private enum HumanState { Idle, SearchingFood, SearchingWater, Eating }
     private HumanState currentState = HumanState.Idle;
 
     public NavMeshAgent agent;
     private HumanTimeManager humanTimeManager;
-    private TreeParameters currentTargetTree;
+    private HumanInventory inventory;
+
+    private ResourceParameters currentTargetResource;
     private float interactionDistance = 1f;
 
     private void Awake()
@@ -19,11 +21,14 @@ public class HumansAI : MonoBehaviour
         agent.updateRotation = false;
         agent.updateUpAxis = false;
 
+        inventory = GetComponent<HumanInventory>();
         humanTimeManager = GetComponent<HumanTimeManager>();
     }
 
     private void Update()
     {
+        CheckNeeds(humanTimeManager.hunger, humanTimeManager.thirst);
+
         switch (currentState)
         {
             case HumanState.SearchingFood:
@@ -31,6 +36,9 @@ public class HumansAI : MonoBehaviour
                 break;
             case HumanState.SearchingWater:
                 SearchWater();
+                break;
+            case HumanState.Eating:
+                EatFood();
                 break;
             case HumanState.Idle:
                 Idle();
@@ -40,17 +48,61 @@ public class HumansAI : MonoBehaviour
 
     public void CheckNeeds(float hunger, float thirst)
     {
-        if (hunger <= 40 && currentState != HumanState.SearchingFood)
+        if (currentState == HumanState.Idle)
         {
-            currentState = HumanState.SearchingFood;
+            if (hunger <= 40)
+            {
+                if (CheckForFoodInInventory())
+                {
+                    currentState = HumanState.Eating;
+                }
+                else
+                {
+                    currentState = HumanState.SearchingFood;
+                }
+            }
+            else if (thirst <= 40)
+            {
+                currentState = HumanState.SearchingWater;
+            }
         }
-        else if (thirst <= 40 && currentState != HumanState.SearchingWater)
+
+        if (currentState == HumanState.SearchingWater && thirst > 40)
         {
-            currentState = HumanState.SearchingWater;
+            currentState = HumanState.Idle;
+        }
+
+        if (currentState == HumanState.SearchingFood && hunger > 40)
+        {
+            currentState = HumanState.Idle;
+        }
+    }
+
+    private bool CheckForFoodInInventory()
+    {
+        return inventory.currentFruits > 0 || inventory.currentMeats > 0; //Check for food in inventory
+    }
+
+    private void EatFood()
+    {
+        //Check if there's food in the inventory
+        if (CheckForFoodInInventory())
+        {
+            if (inventory.currentMeats > 0)
+            {
+                inventory.RemoveResource("meat", 1);
+                humanTimeManager.hunger += 60;
+            }
+            else if (inventory.currentFruits > 0)
+            {
+                inventory.RemoveResource("fruit", 1);
+                humanTimeManager.hunger += 95;
+            }
+            currentState = HumanState.Idle;
         }
         else
         {
-            currentState = HumanState.Idle;
+            currentState = HumanState.SearchingFood;
         }
     }
 
@@ -61,23 +113,25 @@ public class HumansAI : MonoBehaviour
 
     void SearchFood()
     {
-        if (currentTargetTree == null || currentTargetTree.foodHarvested)
+        //Find fruit
+        if (currentTargetResource == null || currentTargetResource.IsBeingHarvested)
         {
-            currentTargetTree = WorldRessources.instance.FindNearestFoodTree(transform.position);
-            if (currentTargetTree != null)
+            currentTargetResource = WorldRessources.instance.FindNearestResource(transform.position, "fruit");
+            if (currentTargetResource != null && !currentTargetResource.IsBeingHarvested)
             {
-                agent.SetDestination(currentTargetTree.transform.position);
+                agent.SetDestination(currentTargetResource.transform.position);
             }
             else
             {
-                currentState = HumanState.Idle;
+                currentState = HumanState.Idle; //No resource found or it's being harvested
             }
         }
 
-        if (currentTargetTree != null && Vector3.Distance(transform.position, currentTargetTree.transform.position) < interactionDistance)
+        //Interact with resource
+        if (currentTargetResource != null && Vector3.Distance(transform.position, currentTargetResource.transform.position) < interactionDistance && !currentTargetResource.IsBeingHarvested)
         {
-            currentTargetTree.HarvestFood(humanTimeManager);
-            currentTargetTree = null;
+            StartCoroutine(currentTargetResource.FarmResource(GetComponent<HumanInventory>()));
+            currentTargetResource = null;
             StartCoroutine(Interacting());
         }
     }
@@ -91,6 +145,7 @@ public class HumansAI : MonoBehaviour
         }
         else
         {
+            print("No water found, returning to Idle state");
             currentState = HumanState.Idle;
             humanTimeManager.isBusy = false;
         }
@@ -101,6 +156,7 @@ public class HumansAI : MonoBehaviour
             humanTimeManager.thirst += 60;
             StartCoroutine(Interacting());
             humanTimeManager.isBusy = false;
+
             CheckNeeds(humanTimeManager.hunger, humanTimeManager.thirst);
         }
     }
@@ -114,6 +170,6 @@ public class HumansAI : MonoBehaviour
 
     void Idle()
     {
-        //rint("Idle");
+        print("Idle state");
     }
 }

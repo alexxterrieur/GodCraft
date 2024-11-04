@@ -74,7 +74,7 @@ public class HumanTimeManager : MonoBehaviour
                 Debug.Log(gameObject.name + " has reached life expectancy.");
                 lifeManager.TakeDamage(lifeManager.currentHealth);
             }
-
+             
             if (!isBusy)
             {
                 humanAI.CheckNeeds(hunger, thirst);
@@ -187,7 +187,7 @@ public class HumanTimeManager : MonoBehaviour
         babyTimeManager.thirst = 100f;
 
         //Random color
-        Color skinColor = Color.Lerp(father.GetComponent<SpriteRenderer>().color, mother.GetComponent<SpriteRenderer>().color, 0.5f);
+        Color skinColor = Color.Lerp(father.GetComponent<SpriteRenderer>().color, mother.GetComponent<SpriteRenderer>().color, 0.8f);
         baby.GetComponent<SpriteRenderer>().color = skinColor;
     }
 

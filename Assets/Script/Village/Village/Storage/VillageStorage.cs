@@ -9,7 +9,7 @@ public class VillageStorage : MonoBehaviour
     public int currentOres;
     public int currentMeats;
     public int currentFruits;
-    public int currentWater;
+    public int currentWaterStack;
 
 
     private int maxWoods;
@@ -18,24 +18,6 @@ public class VillageStorage : MonoBehaviour
     private int maxMeats;
     private int maxFruits;
     private int maxWater;
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            AddRessources("wood", 5);
-        }
-
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            AddRessources("stone", 5);
-        }
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            AddRessources("ore", 5);
-        }
-    }
 
     public void SetMaxStorageValues(VillageLevelData villageLevel)
     {
@@ -56,7 +38,7 @@ public class VillageStorage : MonoBehaviour
             case "ore": return currentOres;
             case "meat": return currentMeats;
             case "fruit": return currentFruits;
-            case "water": return currentWater;
+            case "water": return currentWaterStack;
             default:
                 Debug.Log("Unknown resource type: " + resourceType);
                 return 0;
@@ -72,7 +54,7 @@ public class VillageStorage : MonoBehaviour
             case "ore": currentOres = Mathf.Max(0, currentOres - amount); break;
             case "meat": currentMeats = Mathf.Max(0, currentMeats - amount); break;
             case "fruit": currentFruits = Mathf.Max(0, currentFruits - amount); break;
-            case "water": currentWater = Mathf.Max(0, currentWater - amount); break;
+            case "water": currentWaterStack = Mathf.Max(0, currentWaterStack - amount); break;
         }
     }
 
@@ -126,9 +108,9 @@ public class VillageStorage : MonoBehaviour
                 break;
 
             case ("water"):
-                if(currentWater +  amount < maxWater)
+                if(currentWaterStack +  amount < maxWater)
                 {
-                    currentWater += amount;
+                    currentWaterStack += amount;
                 }
                 else
                     Debug.Log("StorageFull -> water");
