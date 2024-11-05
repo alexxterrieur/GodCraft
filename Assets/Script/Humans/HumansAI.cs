@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class HumansAI : MonoBehaviour
 {
-    private enum HumanState { Idle, SearchingFood, SearchingWater, Eating }
+    private enum HumanState { Idle, SearchingFood, SearchingWater, Eating, MovingToStorage }
     private HumanState currentState = HumanState.Idle;
 
     public NavMeshAgent agent;
@@ -13,7 +13,8 @@ public class HumansAI : MonoBehaviour
     private HumanInventory inventory;
 
     private ResourceParameters currentTargetResource;
-    private float interactionDistance = 1f;
+    private float interactionDistance = 2f;
+    private VillageStorage targetStorage;
 
     private void Awake()
     {
@@ -25,12 +26,14 @@ public class HumansAI : MonoBehaviour
         humanTimeManager = GetComponent<HumanTimeManager>();
     }
 
+
     private void Update()
     {
-        CheckNeeds(humanTimeManager.hunger, humanTimeManager.thirst);
-
         switch (currentState)
         {
+            case HumanState.MovingToStorage:
+                CheckStorageProximity();
+                break;
             case HumanState.SearchingFood:
                 SearchFood();
                 break;
@@ -117,9 +120,13 @@ public class HumansAI : MonoBehaviour
         if (currentTargetResource == null || currentTargetResource.IsBeingHarvested)
         {
             currentTargetResource = WorldRessources.instance.FindNearestResource(transform.position, "fruit");
+
             if (currentTargetResource != null && !currentTargetResource.IsBeingHarvested)
             {
                 agent.SetDestination(currentTargetResource.transform.position);
+
+                //Subscribe to the resource's onResourceHarvested event
+                currentTargetResource.onResourceHarvested.AddListener(OnResourceHarvested);
             }
             else
             {
@@ -130,9 +137,29 @@ public class HumansAI : MonoBehaviour
         //Interact with resource
         if (currentTargetResource != null && Vector3.Distance(transform.position, currentTargetResource.transform.position) < interactionDistance && !currentTargetResource.IsBeingHarvested)
         {
-            StartCoroutine(currentTargetResource.FarmResource(GetComponent<HumanInventory>()));
+            StartCoroutine(currentTargetResource.FarmResource(inventory));
             currentTargetResource = null;
             StartCoroutine(Interacting());
+        }
+    }
+
+    private void OnResourceHarvested()
+    {
+        //If inventory is full, move to the storage
+        if (inventory.isFullOfSomething)
+        {
+            VillageStorage villageStorage = inventory.GetComponent<HumanVillageInfos>().village.GetVillageStorage();
+            if (villageStorage != null)
+            {
+                MoveToVillageStorage(villageStorage);
+                print("full, move to storage");
+            }
+        }
+
+        //Unfollow the event when the interaction is over
+        if (currentTargetResource != null)
+        {
+            currentTargetResource.onResourceHarvested.RemoveListener(OnResourceHarvested);
         }
     }
 
@@ -158,6 +185,24 @@ public class HumansAI : MonoBehaviour
             humanTimeManager.isBusy = false;
 
             CheckNeeds(humanTimeManager.hunger, humanTimeManager.thirst);
+        }
+    }
+
+    public void MoveToVillageStorage(VillageStorage villageStorage)
+    {
+        targetStorage = villageStorage;
+        currentState = HumanState.MovingToStorage;
+        agent.SetDestination(villageStorage.transform.position);
+    }
+
+    private void CheckStorageProximity()
+    {
+        if (targetStorage != null && Vector3.Distance(transform.position, targetStorage.transform.position) < interactionDistance)
+        {
+            inventory.TransferToVillageStorage(targetStorage);
+
+            targetStorage = null;
+            currentState = HumanState.Idle;
         }
     }
 

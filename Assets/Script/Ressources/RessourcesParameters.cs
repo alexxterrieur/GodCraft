@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 public class ResourceParameters : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class ResourceParameters : MonoBehaviour
 
     private HumanInventory humanInventory;
 
+    //Event to notify that the resource has been harvested
+    public UnityEvent onResourceHarvested;
+
     public IEnumerator FarmResource(HumanInventory human)
     {
         humanInventory = human;
@@ -21,21 +25,14 @@ public class ResourceParameters : MonoBehaviour
         if (resourceHarvested) yield break;
 
         IsBeingHarvested = true;
-
         yield return new WaitForSeconds(harvestTime);
 
         if (humanInventory != null)
         {
             humanInventory.AddRessource(resourceName, resourceAmount);
 
-            if (humanInventory.isFullOfSomething)
-            {
-                VillageStorage villageStorage = humanInventory.GetComponent<HumanVillageInfos>().village.GetVillageStorage();
-                if (villageStorage != null)
-                {
-                    humanInventory.TransferToVillageStorage(villageStorage);
-                }
-            }
+            //Trigger the event to notify the resource was harvested
+            onResourceHarvested?.Invoke();
         }
 
         resourceHarvested = true;

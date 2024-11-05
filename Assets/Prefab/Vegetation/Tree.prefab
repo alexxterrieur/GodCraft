@@ -103,6 +103,9 @@ MonoBehaviour:
   harvestTime: 1.2
   canRespawn: 1
   resourceCooldown: 2
+  onResourceHarvested:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &1330847961851370930
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,3 +123,6 @@ MonoBehaviour:
   harvestTime: 3.5
   canRespawn: 0
   resourceCooldown: 0
+  onResourceHarvested:
+    m_PersistentCalls:
+      m_Calls: []
