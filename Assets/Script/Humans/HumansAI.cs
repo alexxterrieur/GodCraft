@@ -94,12 +94,12 @@ public class HumansAI : MonoBehaviour
             if (inventory.currentMeats > 0)
             {
                 inventory.RemoveResource("meat", 1);
-                humanTimeManager.hunger += 60;
+                humanTimeManager.hunger = Mathf.Min(humanTimeManager.hunger + (humanTimeManager.maxHunger * 0.75f), humanTimeManager.maxHunger); //Set hunger to 75%
             }
             else if (inventory.currentFruits > 0)
             {
                 inventory.RemoveResource("fruit", 1);
-                humanTimeManager.hunger += 95;
+                humanTimeManager.hunger = humanTimeManager.maxHunger; //Set hunger to max value
             }
             currentState = HumanState.Idle;
         }
@@ -180,7 +180,7 @@ public class HumansAI : MonoBehaviour
         //Interact with water
         if (Vector3.Distance(transform.position, nearestWater) < interactionDistance)
         {
-            humanTimeManager.thirst += 60;
+            humanTimeManager.thirst = humanTimeManager.maxThirst; //Set thirst to max value
             StartCoroutine(Interacting());
             humanTimeManager.isBusy = false;
 

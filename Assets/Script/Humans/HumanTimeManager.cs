@@ -10,6 +10,10 @@ public class HumanTimeManager : MonoBehaviour
 
     public float hunger;
     public float thirst;
+
+    public float maxHunger;
+    public float maxThirst;
+
     public int survivalDamages;
     public bool isBusy = false;
 
