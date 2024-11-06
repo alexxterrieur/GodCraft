@@ -270,6 +270,19 @@ public class VillageManager : MonoBehaviour
         return true;
     }
 
+    public void DestroyVillage()
+    {
+        for (int i = houses.Count - 1; i >= 0; i--)
+        {
+            if (houses[i] != null)
+            {
+                Destroy(houses[i]);
+            }
+        }
+
+        Destroy(gameObject);
+    }
+
     public HumansStats GetVillagersStats()
     {
         return currentVillageLevelData.villagersStats;

@@ -30,15 +30,21 @@ public class LifeManager : MonoBehaviour
 
             if(villageInfo.belongsToVillage && villageInfo.village != null)
             {
-                if(villageInfo.isVillageChief)
+                if (villageInfo.village.GetVillagerCount() == 1)
+                {
+                    Debug.Log("Village destroyed");
+                    villageInfo.village.DestroyVillage();                    
+                }
+
+                if (villageInfo.village.GetVillagerCount() > 1 && villageInfo.isVillageChief)
                 {
                     villageInfo.village.DesignateNewChief();
-                }
+                }                
 
                 villageInfo.village.RemoveVillager(villageInfo);                
             }
 
-            print("human dead");
+            print("Human dead");
             Destroy(gameObject);
         }
     }

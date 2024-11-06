@@ -262,7 +262,7 @@ MonoBehaviour:
   thirst: 200
   maxHunger: 150
   maxThirst: 200
-  survivalDamages: 0
+  survivalDamages: 5
   isBusy: 0
   defaultStats: {fileID: 11400000, guid: 9b211172082c62b43812d13c0f188246, type: 2}
   babyHuman: {fileID: 3103709489662281376}
