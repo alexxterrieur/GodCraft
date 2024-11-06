@@ -5,8 +5,11 @@ using UnityEngine.AI;
 
 public class HumansAI : MonoBehaviour
 {
-    private enum HumanState { Idle, SearchingFood, SearchingWater, Eating, MovingToStorage }
+    private enum HumanState { Idle, SearchingFood, SearchingWater, Eating, MovingToStorage, Working }
     private HumanState currentState = HumanState.Idle;
+
+    public enum Job { None, Lumberjack, Miner }
+    public Job currentJob = Job.None;
 
     public NavMeshAgent agent;
     private HumanTimeManager humanTimeManager;
@@ -15,6 +18,7 @@ public class HumansAI : MonoBehaviour
     private ResourceParameters currentTargetResource;
     private float interactionDistance = 2f;
     private VillageStorage targetStorage;
+    private bool isInteracting = false;
 
     private void Awake()
     {
@@ -26,9 +30,10 @@ public class HumansAI : MonoBehaviour
         humanTimeManager = GetComponent<HumanTimeManager>();
     }
 
-
     private void Update()
     {
+        if (isInteracting) return; // Prevent state changes while interacting
+
         switch (currentState)
         {
             case HumanState.MovingToStorage:
@@ -46,7 +51,15 @@ public class HumansAI : MonoBehaviour
             case HumanState.Idle:
                 Idle();
                 break;
+            case HumanState.Working:
+                Work();
+                break;
         }
+    }
+
+    public void UpdateAgentSpeed(float newSpeed)
+    {
+        agent.speed = newSpeed;
     }
 
     public void CheckNeeds(float hunger, float thirst)
@@ -68,6 +81,10 @@ public class HumansAI : MonoBehaviour
             {
                 currentState = HumanState.SearchingWater;
             }
+            else if (currentJob != Job.None)
+            {
+                currentState = HumanState.Working;
+            }
         }
 
         if (currentState == HumanState.SearchingWater && thirst > 40)
@@ -83,7 +100,7 @@ public class HumansAI : MonoBehaviour
 
     private bool CheckForFoodInInventory()
     {
-        return inventory.currentFruits > 0 || inventory.currentMeats > 0; //Check for food in inventory
+        return inventory.currentFruits > 0 || inventory.currentMeats > 0;
     }
 
     private void EatFood()
@@ -91,6 +108,7 @@ public class HumansAI : MonoBehaviour
         //Check if there's food in the inventory
         if (CheckForFoodInInventory())
         {
+            isInteracting = true;
             if (inventory.currentMeats > 0)
             {
                 inventory.RemoveResource("meat", 1);
@@ -102,16 +120,12 @@ public class HumansAI : MonoBehaviour
                 humanTimeManager.hunger = humanTimeManager.maxHunger; //Set hunger to max value
             }
             currentState = HumanState.Idle;
+            StartCoroutine(Interacting()); //Interact coroutine to reset state
         }
         else
         {
             currentState = HumanState.SearchingFood;
         }
-    }
-
-    public void UpdateAgentSpeed(float newSpeed)
-    {
-        agent.speed = newSpeed;
     }
 
     void SearchFood()
@@ -180,6 +194,7 @@ public class HumansAI : MonoBehaviour
         //Interact with water
         if (Vector3.Distance(transform.position, nearestWater) < interactionDistance)
         {
+            isInteracting = true;
             humanTimeManager.thirst = humanTimeManager.maxThirst; //Set thirst to max value
             StartCoroutine(Interacting());
             humanTimeManager.isBusy = false;
@@ -200,9 +215,98 @@ public class HumansAI : MonoBehaviour
         if (targetStorage != null && Vector3.Distance(transform.position, targetStorage.transform.position) < interactionDistance)
         {
             inventory.TransferToVillageStorage(targetStorage);
-
             targetStorage = null;
             currentState = HumanState.Idle;
+        }
+    }
+
+    private void Work()
+    {
+        if (humanTimeManager.hunger <= 40) //Check if the human is hungry before continuing work
+        {
+            if (CheckForFoodInInventory())
+            {
+                currentState = HumanState.Eating; //Eat if food is available
+            }
+            else
+            {
+                currentState = HumanState.SearchingFood; //Search for food if none in inventory
+            }
+            return; //Do not continue working if hungry
+        }
+
+        if (currentJob == Job.Lumberjack)
+        {
+            SearchWood();
+        }
+        else if (currentJob == Job.Miner)
+        {
+            SearchStoneOrOre();
+        }
+
+        if (inventory.isFullOfSomething)
+        {
+            VillageStorage villageStorage = inventory.GetComponent<HumanVillageInfos>().village.GetVillageStorage();
+            if (villageStorage != null)
+            {
+                MoveToVillageStorage(villageStorage);
+            }
+        }
+    }
+
+    private void SearchWood()
+    {
+        if (currentTargetResource == null || currentTargetResource.IsBeingHarvested)
+        {
+            currentTargetResource = WorldRessources.instance.FindNearestResource(transform.position, "wood");
+
+            if (currentTargetResource != null && !currentTargetResource.IsBeingHarvested)
+            {
+                agent.SetDestination(currentTargetResource.transform.position);
+                currentTargetResource.onResourceHarvested.AddListener(OnResourceHarvested);
+            }
+            else
+            {
+                currentState = HumanState.Idle; //No resource found
+            }
+        }
+
+        if (currentTargetResource != null && Vector3.Distance(transform.position, currentTargetResource.transform.position) < interactionDistance && !currentTargetResource.IsBeingHarvested)
+        {
+            StartCoroutine(currentTargetResource.FarmResource(inventory));
+            currentTargetResource = null;
+            StartCoroutine(Interacting());
+        }
+    }
+
+    private void SearchStoneOrOre()
+    {
+        if (currentTargetResource == null || currentTargetResource.IsBeingHarvested)
+        {
+            currentTargetResource = WorldRessources.instance.FindNearestResource(transform.position, "stone");
+
+            //20% chance to target ore
+            if (Random.value < 0.2f)
+            {
+                currentTargetResource = WorldRessources.instance.FindNearestResource(transform.position, "ore");
+            }
+
+            if (currentTargetResource != null && !currentTargetResource.IsBeingHarvested)
+            {
+                agent.SetDestination(currentTargetResource.transform.position);
+                currentTargetResource.onResourceHarvested.AddListener(OnResourceHarvested);
+            }
+            else
+            {
+                currentState = HumanState.Idle; //No resource found or interacting
+            }
+        }
+
+        if (currentTargetResource != null && Vector3.Distance(transform.position, currentTargetResource.transform.position) < interactionDistance && !currentTargetResource.IsBeingHarvested)
+        {
+            StartCoroutine(currentTargetResource.FarmResource(inventory));
+            currentTargetResource = null;
+            StartCoroutine(Interacting());
         }
     }
 
@@ -211,6 +315,7 @@ public class HumansAI : MonoBehaviour
         agent.isStopped = true;
         yield return new WaitForSeconds(1);
         agent.isStopped = false;
+        isInteracting = false; // Unlock state after interaction
     }
 
     void Idle()

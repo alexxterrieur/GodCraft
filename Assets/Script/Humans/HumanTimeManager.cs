@@ -11,8 +11,8 @@ public class HumanTimeManager : MonoBehaviour
     public float hunger;
     public float thirst;
 
-    public float maxHunger;
-    public float maxThirst;
+    public float maxHunger = 150f;
+    public float maxThirst = 200f;
 
     public int survivalDamages;
     public bool isBusy = false;
@@ -41,6 +41,9 @@ public class HumanTimeManager : MonoBehaviour
         humanAI = GetComponent<HumansAI>();
         birthday = timeManager.GetDate();
         lifeManager = GetComponent<LifeManager>();
+
+        hunger = maxHunger;
+        thirst = maxThirst;
 
         if (humanGetStats.spawnedByGod)
         {
@@ -78,7 +81,7 @@ public class HumanTimeManager : MonoBehaviour
                 Debug.Log(gameObject.name + " has reached life expectancy.");
                 lifeManager.TakeDamage(lifeManager.currentHealth);
             }
-             
+
             if (!isBusy)
             {
                 humanAI.CheckNeeds(hunger, thirst);
@@ -88,8 +91,6 @@ public class HumanTimeManager : MonoBehaviour
             {
                 lifeManager.TakeDamage(survivalDamages);
             }
-
-            humanAI.CheckNeeds(hunger, thirst);
 
             // Vérification de la reproduction
             if (humanGetStats.isAdult && currentAge < menopauseAge)
@@ -120,6 +121,7 @@ public class HumanTimeManager : MonoBehaviour
         }
 
         InitializeReproduction();
+        AssignJob();
 
         return true;
     }
@@ -128,6 +130,21 @@ public class HumanTimeManager : MonoBehaviour
     {
         childrenBorn = 0;
         timeUntilNextBirth = GetRandomBirthInterval();
+    }
+
+    private void AssignJob()
+    {
+        int randomJob = Random.Range(0, 2);
+        if (randomJob == 0)
+        {
+            humanAI.currentJob = (HumansAI.Job.Lumberjack);
+            Debug.Log(gameObject.name + " has become a Lumberjack.");
+        }
+        else
+        {
+            humanAI.currentJob = (HumansAI.Job.Miner);
+            Debug.Log(gameObject.name + " has become a Miner.");
+        }
     }
 
     private float GetRandomBirthInterval()
@@ -159,7 +176,7 @@ public class HumanTimeManager : MonoBehaviour
 
                 childrenBorn++;
 
-                //Set a new time until nex birth
+                //Set a new time until next birth
                 if (childrenBorn < maxChildrenNumber)
                 {
                     timeUntilNextBirth = GetRandomBirthInterval();

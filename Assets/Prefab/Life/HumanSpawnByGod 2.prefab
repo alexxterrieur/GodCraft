@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84fcc39357d59e64091cc0757573431a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentJob: 0
   agent: {fileID: 0}
 --- !u!114 &1847647424535882185
 MonoBehaviour:
@@ -258,7 +259,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   timeManager: {fileID: 0}
   hunger: 150
-  thirst: 100
+  thirst: 200
+  maxHunger: 150
+  maxThirst: 200
   survivalDamages: 0
   isBusy: 0
   defaultStats: {fileID: 11400000, guid: 9b211172082c62b43812d13c0f188246, type: 2}
@@ -298,3 +301,4 @@ MonoBehaviour:
   currentFruits: 0
   currentMeats: 0
   currentWaterStack: 0
+  isFullOfSomething: 0

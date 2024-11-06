@@ -99,4 +99,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resourceName: stone
   resourceAmount: 10
-  harvestTime: 5
+  harvestTime: 3
+  canRespawn: 0
+  resourceCooldown: 0
+  onResourceHarvested:
+    m_PersistentCalls:
+      m_Calls: []

@@ -63,57 +63,69 @@ public class VillageStorage : MonoBehaviour
         switch (ressourceType)
         {
             case ("wood"):
-                if (currentWoods + amount < maxWoods)
+                if (currentWoods + amount <= maxWoods)
                 {
                     currentWoods += amount;
                 }
                 else
-                    Debug.Log("StorageFull -> wood" + maxWoods);
+                {
+                    currentWoods = maxWoods;
+                }
                 break;
 
             case ("stone"):
-                if (currentStones + amount < maxStones)
+                if (currentStones + amount <= maxStones)
                 {
                     currentStones += amount;
                 }
                 else
-                    Debug.Log("StorageFull -> stone");
+                {
+                    currentStones = maxStones;
+                }
                 break;
 
             case ("ore"):
-                if (currentOres + amount < maxOres)
+                if (currentOres + amount <= maxOres)
                 {
                     currentOres += amount;
                 }
                 else
-                    Debug.Log("StorageFull -> ores");
+                {
+                    currentOres = maxOres;
+                }
                 break;
 
             case ("meat"):
-                if (currentMeats + amount < maxMeats)
+                if (currentMeats + amount <= maxMeats)
                 {
                     currentMeats += amount;
                 }
                 else
-                    Debug.Log("StorageFull -> meat");
+                {
+                    currentMeats = maxMeats;
+                }
                 break;
 
             case ("fruit"):
-                if (currentFruits + amount < maxFruits)
+                if (currentFruits + amount <= maxFruits)
                 {
                     currentFruits += amount;
                 }
                 else
-                    Debug.Log("StorageFull -> fruit");
+                {
+                    currentFruits = maxFruits;
+                }
                 break;
 
             case ("water"):
-                if(currentWaterStack +  amount < maxWater)
+                if (currentWaterStack + amount <= maxWater)
                 {
                     currentWaterStack += amount;
                 }
                 else
-                    Debug.Log("StorageFull -> water");
+                {
+                    currentWaterStack = maxWater;
+                }
                 break;
         }
     }

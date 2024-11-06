@@ -99,4 +99,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   resourceName: ore
   resourceAmount: 3
-  harvestTime: 5
+  harvestTime: 4
+  canRespawn: 0
+  resourceCooldown: 0
+  onResourceHarvested:
+    m_PersistentCalls:
+      m_Calls: []
