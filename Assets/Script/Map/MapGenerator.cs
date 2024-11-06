@@ -13,6 +13,8 @@ public class NoiseTile
 
 public class MapGenerator : MonoBehaviour
 {
+    private VegetationGenerator vegetationGenerator; ///EVITER LA REF
+
     [Header("Tilemap")]
     public Tilemap groundTilemap;
     public Tilemap waterTilemap;
@@ -25,48 +27,118 @@ public class MapGenerator : MonoBehaviour
     private float centerY;
 
     [Header("Noise Parameters")]
-    [Range(1, 20)] public float noiseScale;
-    [Range(1, 10)] public int numOctaves;
-    [Range(0f, 1f)] public float persistence;
-    [Range(1f, 3f)] public float lacunarity;
-    [Range(0, 5000)] public int noiseOffsetX;
-    [Range(0, 5000)] public int noiseOffsetY;
-
-    [Range(0.1f, 5f)] public float initialAmplitude;
-    [Range(0.1f, 5f)] public float initialFrequency;
-
-    [Header("Tiles Based on Noise")]
-    public List<NoiseTile> noiseTiles;
+    [SerializeField, Range(1, 20)] private float noiseScale;
+    [SerializeField, Range(1, 10)] private float numOctaves;
+    [SerializeField, Range(0f, 1f)] private float persistence;
+    [SerializeField, Range(1f, 3f)] private float lacunarity;
+    [SerializeField, Range(0, 5000)] private float noiseOffsetX;
+    [SerializeField, Range(0, 5000)] private float noiseOffsetY;
+    [SerializeField, Range(0.1f, 5f)] private float initialAmplitude;
+    [SerializeField, Range(0.1f, 5f)] private float initialFrequency;
 
     [Header("Islandify")]
-    public bool islandify = false;
+    [SerializeField] private bool islandify = false;
     [Range(0.7f, 0.99f)] public float islandSize;
+
+    [Header("Tiles Based on Noise")]
+    public List<NoiseTile> noiseTiles;   
 
     [Header("NavMesh")]
     public NavMeshSurface navMeshSurface;
+
+    private bool mapAlreadyGenerated = false;
+
+    public float NoiseScale
+    {
+        get => noiseScale;
+        set => noiseScale = Mathf.Clamp(value, 1, 20);
+    }
+
+    public float NumOctaves
+    {
+        get => numOctaves;
+        set => numOctaves = Mathf.Clamp(Mathf.RoundToInt(value), 1, 10);
+    }
+
+    public float Persistence
+    {
+        get => persistence;
+        set => persistence = Mathf.Clamp01(value);
+    }
+
+    public float Lacunarity
+    {
+        get => lacunarity;
+        set => lacunarity = Mathf.Clamp(value, 1f, 3f);
+    }
+
+    public float NoiseOffsetX
+    {
+        get => noiseOffsetX;
+        set => noiseOffsetX = Mathf.Clamp(Mathf.RoundToInt(value), 0, 5000);
+    }
+
+    public float NoiseOffsetY
+    {
+        get => noiseOffsetY;
+        set => noiseOffsetX = Mathf.Clamp(Mathf.RoundToInt(value), 0, 5000);
+    }
+
+    public float InitialAmplitude
+    {
+        get => initialAmplitude;
+        set => initialAmplitude = Mathf.Clamp(value, 0.1f, 5f);
+    }
+
+    public float InitialFrequency
+    {
+        get => initialFrequency;
+        set => initialFrequency = Mathf.Clamp(value, 0.1f, 5f);
+    }
+
+    public bool Islandify
+    {
+        get => islandify;
+        set => islandify = value;
+    }
+
 
     void Start()
     {
         centerX = mapWidth / 2f;
         centerY = mapHeight / 2f;
 
-        GenerateMap();
-        navMeshSurface.BuildNavMesh();
+        vegetationGenerator = GetComponent<VegetationGenerator>();
     }
 
-    void GenerateMap()
+    public void GenerateMap()
     {
-        int xOffset = mapWidth / 2;
-        int yOffset = mapHeight / 2;
-
-        for (int x = 0; x < mapWidth; x++)
+        if(!mapAlreadyGenerated)
         {
-            for (int y = 0; y < mapHeight; y++)
+            int xOffset = mapWidth / 2;
+            int yOffset = mapHeight / 2;
+
+            for (int x = 0; x < mapWidth; x++)
             {
-                float noiseValue = islandify ? GetIslandNoiseValue(x, y) : GetPerlinNoiseWithOctaves(x, y);
-                CreateTile(noiseValue, x - xOffset, y - yOffset);
+                for (int y = 0; y < mapHeight; y++)
+                {
+                    float noiseValue = islandify ? GetIslandNoiseValue(x, y) : GetPerlinNoiseWithOctaves(x, y);
+                    CreateTile(noiseValue, x - xOffset, y - yOffset);
+                }
             }
+
+            mapAlreadyGenerated = true;
+            navMeshSurface.BuildNavMesh();
+            vegetationGenerator.GenerateObjects();
         }
+        else
+        {
+            groundTilemap.ClearAllTiles();
+            waterTilemap.ClearAllTiles();
+            mapAlreadyGenerated = false;
+
+            GenerateMap();
+        }        
     }
 
     float GetPerlinNoiseWithOctaves(int x, int y)

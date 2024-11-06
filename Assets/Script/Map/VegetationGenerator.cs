@@ -52,16 +52,13 @@ public class VegetationGenerator : MonoBehaviour
 
     private List<Vector3> placedObjects = new List<Vector3>();
 
-    //Call start function after 1 second so the map is spawned before
-    IEnumerator Start()
+    private void Start()
     {
-        yield return new WaitForSeconds(1f);
         centerX = mapWidth / 2f;
         centerY = mapHeight / 2f;
-        GenerateObjects();
     }
 
-    void GenerateObjects()
+    public void GenerateObjects()
     {
         for (int x = 0; x < mapWidth; x++)
         {
@@ -144,6 +141,12 @@ public class VegetationGenerator : MonoBehaviour
             }
         }
     }
+
+    public void DestroyAllObjects()
+    {
+        
+    }
+
 
     bool IsGrassOrSoil(Tile tile)
     {
