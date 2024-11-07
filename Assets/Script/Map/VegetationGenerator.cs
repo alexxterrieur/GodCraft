@@ -125,27 +125,35 @@ public class VegetationGenerator : MonoBehaviour
                 obj.transform.parent = oresParent;
 
             placedObjects.Add(worldPosition);  //Add to placed objects list
-
-            if (isTree)
-            {
-                //Register tree in WorldRessources
-                TreeParameters treeParams = obj.GetComponent<TreeParameters>();
-                if (treeParams != null)
-                {
-                    WorldRessources.instance.RegisterTree(treeParams);
-                }
-                else
-                {
-                    Debug.LogWarning("Tree prefab does not have TreeParameters component!");
-                }
-            }
         }
     }
 
     public void DestroyAllObjects()
     {
-        
+        foreach (Transform child in treesParent)
+        {
+            ResourceParameters resourceParameters = child.GetComponent<ResourceParameters>();
+            if (resourceParameters != null)
+            {
+                WorldRessources.instance.UnregisterResource(resourceParameters);
+            }
+            Destroy(child.gameObject);
+        }
+
+        foreach (Transform child in oresParent)
+        {
+            ResourceParameters resourceParameters = child.GetComponent<ResourceParameters>();
+            if (resourceParameters != null)
+            {
+                WorldRessources.instance.UnregisterResource(resourceParameters);
+            }
+            Destroy(child.gameObject);
+        }
+
+        placedObjects.Clear();
     }
+
+
 
 
     bool IsGrassOrSoil(Tile tile)

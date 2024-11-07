@@ -14,6 +14,7 @@ public class NoiseTile
 public class MapGenerator : MonoBehaviour
 {
     private VegetationGenerator vegetationGenerator; ///EVITER LA REF
+    [SerializeField] private UIManager uiManager;
 
     [Header("Tilemap")]
     public Tilemap groundTilemap;
@@ -109,6 +110,7 @@ public class MapGenerator : MonoBehaviour
         centerY = mapHeight / 2f;
 
         vegetationGenerator = GetComponent<VegetationGenerator>();
+        uiManager = GetComponent<UIManager>();
     }
 
     public void GenerateMap()
@@ -130,12 +132,17 @@ public class MapGenerator : MonoBehaviour
             mapAlreadyGenerated = true;
             navMeshSurface.BuildNavMesh();
             vegetationGenerator.GenerateObjects();
+
+            uiManager.EnableGameUi();
+            uiManager.closeWindowButton.SetActive(true);
+
         }
         else
         {
             groundTilemap.ClearAllTiles();
             waterTilemap.ClearAllTiles();
             mapAlreadyGenerated = false;
+            vegetationGenerator.DestroyAllObjects();
 
             GenerateMap();
         }        
@@ -223,5 +230,4 @@ public class MapGenerator : MonoBehaviour
             }
         }
     }
-
 }
