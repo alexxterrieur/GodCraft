@@ -4606,7 +4606,7 @@ MonoBehaviour:
   groundTilemap: {fileID: 1605018917}
   waterTilemap: {fileID: 1247226048}
   selectedTile: {fileID: 0}
-  brushSize: 6
+  brushSize: 3
   navMeshSurface: {fileID: 174608293}
 --- !u!1 &1185545714
 GameObject:

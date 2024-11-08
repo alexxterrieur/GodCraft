@@ -15,27 +15,29 @@ public abstract class SpawnableObjectData
 [System.Serializable]
 public class TreeData : SpawnableObjectData
 {
-    
+
 }
 
 [System.Serializable]
 public class OreData : SpawnableObjectData
 {
-    
+
 }
 
 public class VegetationGenerator : MonoBehaviour
 {
+    public static VegetationGenerator instance { get; private set; }
+
     [Header("Tilemap")]
     public Tilemap groundTilemap;
 
     [Header("Trees to Spawn")]
     public List<TreeData> trees;
-    [SerializeField] private Transform treesParent;
+    public Transform treesParent;
 
     [Header("Ores to Spawn")]
     public List<OreData> ores;
-    [SerializeField] private Transform oresParent;
+    public Transform oresParent;
 
     [Header("Spawn Parameters")]
     [Range(0f, 1f)] public float objectDensity;
@@ -52,6 +54,16 @@ public class VegetationGenerator : MonoBehaviour
 
     private List<Vector3> placedObjects = new List<Vector3>();
 
+    private void Awake()
+    {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+    }
+
     private void Start()
     {
         centerX = mapWidth / 2f;
@@ -67,7 +79,7 @@ public class VegetationGenerator : MonoBehaviour
                 Vector3Int tilePosition = new Vector3Int(x - (mapWidth / 2), y - (mapHeight / 2), 0);
                 Tile tile = groundTilemap.GetTile<Tile>(tilePosition);
 
-                if (tile != null && !IsWater(tile))  // Exclure les tiles d'eau
+                if (tile != null && !IsWater(tile))
                 {
                     //Get Perlin noise value to determine if an object should be placed
                     float noiseValue = Mathf.PerlinNoise((x / noiseScale), (y / noiseScale));
@@ -152,9 +164,6 @@ public class VegetationGenerator : MonoBehaviour
 
         placedObjects.Clear();
     }
-
-
-
 
     bool IsGrassOrSoil(Tile tile)
     {

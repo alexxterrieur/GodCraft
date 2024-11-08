@@ -280,6 +280,14 @@ public class VillageManager : MonoBehaviour
             }
         }
 
+        if(villagers.Count > 0)
+        {
+            foreach(var villager in villagers)
+            {
+                Destroy(villager.gameObject);
+            }
+        }
+
         Destroy(gameObject);
     }
 

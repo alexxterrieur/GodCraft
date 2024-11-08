@@ -162,11 +162,18 @@ public class HumansAI : MonoBehaviour
         //If inventory is full, move to the storage
         if (inventory.isFullOfSomething)
         {
-            VillageStorage villageStorage = inventory.GetComponent<HumanVillageInfos>().village.GetVillageStorage();
-            if (villageStorage != null)
+            HumanVillageInfos villageInfo = GetComponent<HumanVillageInfos>();
+
+            if (!villageInfo.belongsToVillage)
+                return;
+            else
             {
-                MoveToVillageStorage(villageStorage);
-                print("full, move to storage");
+                VillageStorage villageStorage = inventory.GetComponent<HumanVillageInfos>().village.GetVillageStorage();
+                if (villageStorage != null)
+                {
+                    MoveToVillageStorage(villageStorage);
+                    print("full, move to storage");
+                }
             }
         }
 
@@ -246,11 +253,18 @@ public class HumansAI : MonoBehaviour
 
         if (inventory.isFullOfSomething)
         {
-            VillageStorage villageStorage = inventory.GetComponent<HumanVillageInfos>().village.GetVillageStorage();
-            if (villageStorage != null)
+            HumanVillageInfos villageInfo = GetComponent<HumanVillageInfos>();
+
+            if (!villageInfo.belongsToVillage)
+                return;
+            else
             {
-                MoveToVillageStorage(villageStorage);
-            }
+                VillageStorage villageStorage = inventory.GetComponent<HumanVillageInfos>().village.GetVillageStorage();
+                if (villageStorage != null)
+                {
+                    MoveToVillageStorage(villageStorage);
+                }
+            }            
         }
     }
 

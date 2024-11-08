@@ -73,33 +73,42 @@ public class TilemapEditor : MonoBehaviour
             Tilemap targetTilemap = DetermineTargetTilemap(selectedTile);
             if (targetTilemap != null)
             {
-                for (int x = -brushSize / 2; x <= brushSize / 2; x++)
+                for (int x = -brushSize; x <= brushSize; x++)
                 {
-                    for (int y = -brushSize / 2; y <= brushSize / 2; y++)
+                    for (int y = -brushSize; y <= brushSize; y++)
                     {
-                        Vector3Int positionToPaint = cellPosition + new Vector3Int(x, y, 0);
-                        targetTilemap.SetTile(positionToPaint, selectedTile);
-
-                        if (targetTilemap == waterTilemap)
+                        if (IsWithinCircle(x, y, brushSize))
                         {
-                            UpdateWaterTile(positionToPaint, true);
+                            Vector3Int positionToPaint = cellPosition + new Vector3Int(x, y, 0);
+
+                            //If painting water check and remove objects
+                            if (selectedTile.name.Contains("Water"))
+                            {
+                                DestroyObjectsOnTile(positionToPaint);
+                                UpdateWaterTile(positionToPaint, true);
+                            }
+
+                            targetTilemap.SetTile(positionToPaint, selectedTile);
                         }
                     }
                 }
             }
         }
-
         StartNavMeshRebuild();
     }
 
     private void RemoveTilesInBrushArea(Vector3Int cellPosition)
     {
-        for (int x = -brushSize / 2; x <= brushSize / 2; x++)
+        for (int x = -brushSize; x <= brushSize; x++)
         {
-            for (int y = -brushSize / 2; y <= brushSize / 2; y++)
+            for (int y = -brushSize; y <= brushSize; y++)
             {
-                Vector3Int positionToRemove = cellPosition + new Vector3Int(x, y, 0);
-                RemoveTileIfExists(positionToRemove);
+                //Only remove tiles within the circular brush area
+                if (IsWithinCircle(x, y, brushSize))
+                {
+                    Vector3Int positionToRemove = cellPosition + new Vector3Int(x, y, 0);
+                    RemoveTileIfExists(positionToRemove);
+                }
             }
         }
     }
@@ -143,8 +152,44 @@ public class TilemapEditor : MonoBehaviour
         }
     }
 
+    private void DestroyObjectsOnTile(Vector3Int cellPosition)
+    {
+        Vector3 worldPosition = waterTilemap.CellToWorld(cellPosition) + new Vector3(0.5f, 0.5f, 0);
+
+        foreach (Transform child in VegetationGenerator.instance.treesParent)
+        {
+            if (Vector3.Distance(child.position, worldPosition) < VegetationGenerator.instance.minDistanceBetweenObjects)
+            {
+                ResourceParameters resourceParameters = child.GetComponent<ResourceParameters>();
+                if (resourceParameters != null)
+                {
+                    WorldRessources.instance.UnregisterResource(resourceParameters);
+                }
+                Destroy(child.gameObject);
+            }
+        }
+
+        foreach (Transform child in VegetationGenerator.instance.oresParent)
+        {
+            if (Vector3.Distance(child.position, worldPosition) < VegetationGenerator.instance.minDistanceBetweenObjects)
+            {
+                ResourceParameters resourceParameters = child.GetComponent<ResourceParameters>();
+                if (resourceParameters != null)
+                {
+                    WorldRessources.instance.UnregisterResource(resourceParameters);
+                }
+                Destroy(child.gameObject);
+            }
+        }
+    }
+
     private bool IsPointerOverUI()
     {
         return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    private bool IsWithinCircle(int x, int y, int radius)
+    {
+        return x * x + y * y <= radius * radius;
     }
 }

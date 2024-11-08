@@ -13,7 +13,6 @@ public class NoiseTile
 
 public class MapGenerator : MonoBehaviour
 {
-    private VegetationGenerator vegetationGenerator; ///EVITER LA REF
     [SerializeField] private UIManager uiManager;
 
     [Header("Tilemap")]
@@ -109,7 +108,6 @@ public class MapGenerator : MonoBehaviour
         centerX = mapWidth / 2f;
         centerY = mapHeight / 2f;
 
-        vegetationGenerator = GetComponent<VegetationGenerator>();
         uiManager = GetComponent<UIManager>();
     }
 
@@ -131,7 +129,7 @@ public class MapGenerator : MonoBehaviour
 
             mapAlreadyGenerated = true;
             navMeshSurface.BuildNavMesh();
-            vegetationGenerator.GenerateObjects();
+            VegetationGenerator.instance.GenerateObjects();
 
             uiManager.EnableGameUi();
             uiManager.closeWindowButton.SetActive(true);
@@ -139,13 +137,36 @@ public class MapGenerator : MonoBehaviour
         }
         else
         {
-            groundTilemap.ClearAllTiles();
-            waterTilemap.ClearAllTiles();
-            mapAlreadyGenerated = false;
-            vegetationGenerator.DestroyAllObjects();
-
+            ClearExistingMap();
             GenerateMap();
         }        
+    }
+
+    private void ClearExistingMap()
+    {
+        //Clear map
+        groundTilemap.ClearAllTiles();
+        waterTilemap.ClearAllTiles();
+        mapAlreadyGenerated = false;
+        VegetationGenerator.instance.DestroyAllObjects();
+
+        //Destroy villages
+        VillageManager[] villages = FindObjectsOfType<VillageManager>();
+        foreach (var village in villages)
+        {
+            village.DestroyVillage();
+        }
+
+        //Destroy humans not in villages
+        GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
+        if(humans != null)
+        {
+            foreach (var human in humans)
+            {
+                Destroy(human.gameObject);
+            }
+        }
+
     }
 
     float GetPerlinNoiseWithOctaves(int x, int y)
