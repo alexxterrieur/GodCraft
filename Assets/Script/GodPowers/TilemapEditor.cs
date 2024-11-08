@@ -28,16 +28,6 @@ public class TilemapEditor : MonoBehaviour
         }
     }
 
-    public void SelectTile(TileBase tile)
-    {
-        selectedTile = tile;
-    }
-
-    public void SetBrushSize(float size)
-    {
-        brushSize = Mathf.RoundToInt(size);
-    }
-
     private void StartNavMeshRebuild()
     {
         if (navMeshRebuildCoroutine != null)
@@ -155,10 +145,12 @@ public class TilemapEditor : MonoBehaviour
     private void DestroyObjectsOnTile(Vector3Int cellPosition)
     {
         Vector3 worldPosition = waterTilemap.CellToWorld(cellPosition) + new Vector3(0.5f, 0.5f, 0);
+        float destructionRadius = brushSize;
 
+        //Destroy trees
         foreach (Transform child in VegetationGenerator.instance.treesParent)
         {
-            if (Vector3.Distance(child.position, worldPosition) < VegetationGenerator.instance.minDistanceBetweenObjects)
+            if (Vector3.Distance(child.position, worldPosition) < destructionRadius)
             {
                 ResourceParameters resourceParameters = child.GetComponent<ResourceParameters>();
                 if (resourceParameters != null)
@@ -169,9 +161,10 @@ public class TilemapEditor : MonoBehaviour
             }
         }
 
+        //Destroy ores
         foreach (Transform child in VegetationGenerator.instance.oresParent)
         {
-            if (Vector3.Distance(child.position, worldPosition) < VegetationGenerator.instance.minDistanceBetweenObjects)
+            if (Vector3.Distance(child.position, worldPosition) < destructionRadius)
             {
                 ResourceParameters resourceParameters = child.GetComponent<ResourceParameters>();
                 if (resourceParameters != null)
@@ -179,9 +172,46 @@ public class TilemapEditor : MonoBehaviour
                     WorldRessources.instance.UnregisterResource(resourceParameters);
                 }
                 Destroy(child.gameObject);
+            }
+        }
+
+        //Find and damage all humans within range
+        GameObject[] humans = GameObject.FindGameObjectsWithTag("Human");
+        foreach (GameObject human in humans)
+        {
+            if (Vector3.Distance(human.transform.position, worldPosition) < destructionRadius)
+            {
+                LifeManager lifeManager = human.GetComponent<LifeManager>();
+                if (lifeManager != null)
+                {
+                    lifeManager.TakeDamage(1000);
+                }
+            }
+        }
+
+        //Destroy houses in range
+        VillageManager[] villages = FindObjectsOfType<VillageManager>();
+        foreach (VillageManager village in villages)
+        {
+            for (int i = village.houses.Count - 1; i >= 0; i--)
+            {
+                GameObject house = village.houses[i];
+                if (Vector3.Distance(house.transform.position, worldPosition) < destructionRadius)
+                {
+                    village.houses.RemoveAt(i);
+                    Destroy(house);
+                }
+            }
+
+            //Check if TownHall is within range and destroy the entire village if so
+            if (Vector3.Distance(village.transform.position, worldPosition) < destructionRadius)
+            {
+                village.DestroyVillage();
+                break;
             }
         }
     }
+
 
     private bool IsPointerOverUI()
     {

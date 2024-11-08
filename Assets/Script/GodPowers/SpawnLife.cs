@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public class SpawnLife : MonoBehaviour
 {
-    [SerializeField] private GameObject gameObjectToSpawn;
+    public GameObject selectedGameObjectToSpawn;
     [SerializeField] private float spawnBuffer;
 
     private bool canSpawn = true;
@@ -35,11 +35,11 @@ public class SpawnLife : MonoBehaviour
 
     private void SpawnGameObject()
     {
-        if (gameObjectToSpawn != null)
+        if (selectedGameObjectToSpawn != null)
         {
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePosition.z = 0;
-            GameObject agent = Instantiate(gameObjectToSpawn, mousePosition, Quaternion.identity);
+            GameObject agent = Instantiate(selectedGameObjectToSpawn, mousePosition, Quaternion.identity);
             agent.GetComponent<NavMeshAgent>().updateRotation = false;
         }
     }
@@ -57,11 +57,6 @@ public class SpawnLife : MonoBehaviour
             }
             yield return null;
         }
-    }
-
-    public void SelectGameObject(GameObject selectedGameObject)
-    {
-        gameObjectToSpawn  = selectedGameObject;
     }
 
     private bool IsPointerOverUI()

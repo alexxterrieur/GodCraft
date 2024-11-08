@@ -25,7 +25,7 @@ public class VillageManager : MonoBehaviour
     //House level data and prefab
     [SerializeField] private HouseLevelData[] houseLevelDatas;
     [SerializeField] private GameObject housePrefab;
-    private List<GameObject> houses = new List<GameObject>();
+    public List<GameObject> houses = new List<GameObject>();
     private int currentLevel = 1;
 
     private VillageStorage villageStorage;
