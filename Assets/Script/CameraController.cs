@@ -119,5 +119,25 @@ public class CameraController : MonoBehaviour
         transform.position = clampedPosition;
     }
 
+    public IEnumerator CameraShake(float duration, float magnitude)
+    {
+        Vector3 originalPosition = transform.position;
+        float elapsed = 0.0f;
+
+        while (elapsed < duration)
+        {
+            float offsetX = Random.Range(-1f, 1f) * magnitude;
+            float offsetY = Random.Range(-1f, 1f) * magnitude;
+
+            transform.position = new Vector3(Mathf.Clamp(originalPosition.x + offsetX, movementBoundaryLeft, movementBoundaryRight), Mathf.Clamp(originalPosition.y + offsetY, movementBoundaryBottom, movementBoundaryTop), originalPosition.z);
+
+            elapsed += Time.deltaTime;
+
+            yield return null;
+        }
+
+        transform.position = originalPosition;
+    }
+
     private Vector3 GetMousePosition => mainCamera.ScreenToWorldPoint((Vector3)Mouse.current.position.ReadValue());
 }

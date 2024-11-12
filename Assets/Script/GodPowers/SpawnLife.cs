@@ -39,8 +39,12 @@ public class SpawnLife : MonoBehaviour
         {
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePosition.z = 0;
-            GameObject agent = Instantiate(selectedGameObjectToSpawn, mousePosition, Quaternion.identity);
-            agent.GetComponent<NavMeshAgent>().updateRotation = false;
+            GameObject gameObjectToSpawn = Instantiate(selectedGameObjectToSpawn, mousePosition, Quaternion.identity);
+            
+            NavMeshAgent agent = GetComponent<NavMeshAgent>();
+
+            if(agent != null )
+                agent.updateRotation = false;
         }
     }
 
