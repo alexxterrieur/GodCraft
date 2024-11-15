@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 25.377625, y: -35.840347, z: 0}
-  m_LocalScale: {x: 3, y: 2, z: 1}
+  m_LocalScale: {x: 2, y: 1.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -114,6 +114,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 120ca272a1ad22c44af923f021bb16ef, type: 2}
   - {fileID: 11400000, guid: 00a7892f724628d4f8c0af8b740a4411, type: 2}
   housePrefab: {fileID: 5425813427527474656, guid: 5a82220464ba37d49823e3985caf8d27, type: 3}
+  houses: []
 --- !u!114 &4413100289201078010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,4 +132,4 @@ MonoBehaviour:
   currentOres: 0
   currentMeats: 0
   currentFruits: 0
-  currentWater: 0
+  currentWaterStack: 0

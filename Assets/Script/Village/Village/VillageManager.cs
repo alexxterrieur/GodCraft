@@ -186,9 +186,9 @@ public class VillageManager : MonoBehaviour
     private Vector3 GetRandomPositionAroundVillage()
     {
         Vector3 randomPosition = Vector3.zero;
-        float houseSize = 4f;
+        float houseSize = .85f;
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 15; i++)
         {
             randomPosition = transform.position + new Vector3(UnityEngine.Random.Range(-10, 10), UnityEngine.Random.Range(-10, 10), 0);
 
@@ -203,6 +203,15 @@ public class VillageManager : MonoBehaviour
 
     private bool IsPositionValid(Vector3 position, float houseSize)
     {
+        float exclusionRadius = 0.5f; //Radius around the village center to exclude house placement
+
+        //Check if the position is within the exclusion radius
+        if (Vector3.Distance(position, transform.position) < exclusionRadius)
+        {
+            return false;
+        }
+
+        //Check if the position is within the village's bounds
         if (position.x < transform.position.x - 20 || position.x > transform.position.x + 20 || position.y < transform.position.y - 20 || position.y > transform.position.y + 20) //modifier avec l'update de la taille des villages 
         {
             return false;
@@ -221,6 +230,7 @@ public class VillageManager : MonoBehaviour
 
         return true;
     }
+
 
     private void UpgradeHouses()
     {

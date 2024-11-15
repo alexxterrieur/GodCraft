@@ -60,6 +60,7 @@ public class HumansAI : MonoBehaviour
     public void UpdateAgentSpeed(float newSpeed)
     {
         agent.speed = newSpeed;
+        agent.acceleration = newSpeed;
     }
 
     public void CheckNeeds(float hunger, float thirst)

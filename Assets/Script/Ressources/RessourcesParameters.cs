@@ -18,6 +18,13 @@ public class ResourceParameters : MonoBehaviour
     //Event to notify that the resource has been harvested
     public UnityEvent onResourceHarvested;
 
+    private TimeManager timeManager;
+
+    private void Start()
+    {
+        timeManager = GameObject.FindWithTag("Managers").GetComponent<TimeManager>();
+    }
+
     public IEnumerator FarmResource(HumanInventory human)
     {
         humanInventory = human;
@@ -25,7 +32,9 @@ public class ResourceParameters : MonoBehaviour
         if (resourceHarvested) yield break;
 
         IsBeingHarvested = true;
-        yield return new WaitForSeconds(harvestTime);
+        float adjustedHarvestTime = harvestTime / (timeManager != null ? timeManager.timeSpeed : 1);
+
+        yield return new WaitForSeconds(adjustedHarvestTime);
 
         if (humanInventory != null)
         {
@@ -51,7 +60,9 @@ public class ResourceParameters : MonoBehaviour
 
     private IEnumerator ResourceRespawn()
     {
-        yield return new WaitForSeconds(resourceCooldown);
+        float adjustedCooldown = resourceCooldown / (timeManager != null ? timeManager.timeSpeed : 1);
+
+        yield return new WaitForSeconds(adjustedCooldown);
         resourceHarvested = false;
     }
 
