@@ -6189,6 +6189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectedGameObjectToSpawn: {fileID: 0}
   spawnBuffer: 0.2
+  waterTilemap: {fileID: 1247226048}
 --- !u!4 &1183303774
 Transform:
   m_ObjectHideFlags: 0
