@@ -6,6 +6,7 @@ public class UIManager : MonoBehaviour
 {
     [SerializeField] private GameObject mapGenWindow;
     [SerializeField] private GameObject gameUi;
+    [SerializeField] private GameObject currentWindowOpened;
     public GameObject closeWindowButton;
 
     void Start()
@@ -25,5 +26,12 @@ public class UIManager : MonoBehaviour
     {
         gameUi.SetActive(false);
         mapGenWindow.SetActive(true);
+    }
+
+    public void OpenWindow(GameObject windowToOpen)
+    {
+        currentWindowOpened.SetActive(false);
+        windowToOpen.SetActive(true);
+        currentWindowOpened = windowToOpen;
     }
 }
