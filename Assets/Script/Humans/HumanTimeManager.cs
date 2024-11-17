@@ -50,6 +50,8 @@ public class HumanTimeManager : MonoBehaviour
             StartCoroutine(DelayedAdulthoodCheck());
         }
 
+        SetHumanSpeed(timeManager.timeSpeed);
+
         StartCoroutine(TimeBasedUpdates());
     }
 

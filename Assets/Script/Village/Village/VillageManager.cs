@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 // Struct to hold resource requirements for building or upgrading
@@ -15,7 +16,7 @@ public class VillageManager : MonoBehaviour
 {
     //List of villagers in the village
     public List<HumanVillageInfos> villagers = new List<HumanVillageInfos>();
-    private bool villageInitialized = false;    
+    private bool villageInitialized = false;
 
     //Village level data for different stages
     [SerializeField] private VillageLevelData[] villageLevelDatas = new VillageLevelData[5];
@@ -33,6 +34,8 @@ public class VillageManager : MonoBehaviour
     private bool everythingMaxLevelInVillage = false;
 
     private TimeManager timeManager;
+
+    [SerializeField] private TMP_Text villagersCount;
 
     private void Start()
     {
@@ -71,6 +74,8 @@ public class VillageManager : MonoBehaviour
             villagers.Add(human);
             human.belongsToVillage = true;
             human.village = this;
+
+            villagersCount.text = villagers.Count.ToString();
         }
     }
 
