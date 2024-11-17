@@ -12,7 +12,6 @@ public class TimeManager : MonoBehaviour
     private int currentMonth;
     public TMP_Text timeDisplay;
 
-    // List to track all active humans
     private List<HumanTimeManager> humans = new List<HumanTimeManager>();
 
     private void Start()
@@ -20,7 +19,6 @@ public class TimeManager : MonoBehaviour
         StartCoroutine(UpdateTime());
     }
 
-    // Register a new human in the list
     public void RegisterHuman(HumanTimeManager human)
     {
         if (!humans.Contains(human))

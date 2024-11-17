@@ -3303,9 +3303,9 @@ MonoBehaviour:
   minDistanceBetweenObjects: 0.8
   mapWidth: 200
   mapHeight: 200
-  runtimeTreeSpawnAmount: 7
-  runtimeOresSpawnAmount: 5
-  spawnIntervalInGameSeconds: 8
+  runtimeTreeSpawnAmount: 10
+  runtimeOresSpawnAmount: 8
+  spawnIntervalInGameSeconds: 5
 --- !u!114 &663341369
 MonoBehaviour:
   m_ObjectHideFlags: 0
