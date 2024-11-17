@@ -9,9 +9,9 @@ public class HumanInventory : MonoBehaviour
     public int currentMeats;
     public int currentWaterStack;
 
-    private int maxWoods = 70;
-    private int maxStones = 70;
-    private int maxOres = 30;
+    private int maxWoods = 50;
+    private int maxStones = 30;
+    private int maxOres = 15;
     private int maxMeats = 15;
     private int maxFruits = 15;
     private int maxWater = 15;

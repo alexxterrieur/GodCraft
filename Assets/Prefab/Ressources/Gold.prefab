@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resourceName: ore
-  resourceAmount: 3
+  resourceAmount: 6
   harvestTime: 4
   canRespawn: 0
   resourceCooldown: 0

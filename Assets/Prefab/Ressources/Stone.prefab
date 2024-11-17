@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resourceName: stone
-  resourceAmount: 10
+  resourceAmount: 13
   harvestTime: 3
   canRespawn: 0
   resourceCooldown: 0

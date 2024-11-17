@@ -215,5 +215,10 @@ public class HumanTimeManager : MonoBehaviour
     public void SetHumanSpeed(float speedMultiplier)
     {
         humanAI.UpdateAgentSpeed(humanGetStats.currentStats.speed * speedMultiplier);
+
+        if (speedMultiplier >= 5)
+            survivalDamages = 0;
+        else
+            survivalDamages = 5;
     }
 }
