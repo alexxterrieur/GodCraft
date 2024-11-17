@@ -10,11 +10,17 @@ public class TilemapEditor : MonoBehaviour
     public Tilemap waterTilemap;
 
     public TileBase selectedTile;
-    [Range(1, 10)] public int brushSize = 1;
+    [Range(1, 7)] public int brushSize = 1;
 
     public NavMeshSurface navMeshSurface;
     private Coroutine navMeshRebuildCoroutine;
     private float navMeshRebuildDelay = 2f;
+
+    public float BrushSize
+    {
+        get => brushSize;
+        set => brushSize = Mathf.Clamp(Mathf.RoundToInt(value), 1, 7);
+    }
 
     private void Update()
     {

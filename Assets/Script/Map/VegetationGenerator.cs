@@ -52,7 +52,13 @@ public class VegetationGenerator : MonoBehaviour
     private float centerX;
     private float centerY;
 
+    [Header("Runtime Spawn Settings")]
+    [SerializeField] private int runtimeTreeSpawnAmount;
+    [SerializeField] private int runtimeOresSpawnAmount;
+    [SerializeField] private float spawnIntervalInGameSeconds;
+
     private List<Vector3> placedObjects = new List<Vector3>();
+    private TimeManager timeManager;
 
     private void Awake()
     {
@@ -68,6 +74,9 @@ public class VegetationGenerator : MonoBehaviour
     {
         centerX = mapWidth / 2f;
         centerY = mapHeight / 2f;
+        timeManager = GameObject.FindWithTag("Managers").GetComponent<TimeManager>();
+
+        StartCoroutine(RuntimeVegetationGeneration());
     }
 
     public void GenerateObjects()
@@ -163,6 +172,45 @@ public class VegetationGenerator : MonoBehaviour
         }
 
         placedObjects.Clear();
+    }
+
+    IEnumerator RuntimeVegetationGeneration()
+    {
+        while (true)
+        {
+            float adjustedInterval = spawnIntervalInGameSeconds / timeManager.timeSpeed; //Adjust spawn interval based on timeSpeed
+            yield return new WaitForSeconds(adjustedInterval);
+
+            for (int i = 0; i < runtimeTreeSpawnAmount; i++)
+            {
+                Vector3Int randomTilePosition = GetRandomGroundTilePosition();
+                Tile tile = groundTilemap.GetTile<Tile>(randomTilePosition);
+
+                if (tile != null && !IsWater(tile))
+                {
+                    PlaceObjectBasedOnTile(tile, randomTilePosition, trees);
+                }
+            }
+
+            for (int i = 0; i < runtimeOresSpawnAmount; i++)
+            {
+                Vector3Int randomTilePosition = GetRandomGroundTilePosition();
+                Tile tile = groundTilemap.GetTile<Tile>(randomTilePosition);
+
+                if (tile != null && !IsWater(tile))
+                {
+                    PlaceObjectBasedOnTile(tile, randomTilePosition, ores);
+                }
+            }
+        }
+    }
+
+
+    Vector3Int GetRandomGroundTilePosition()
+    {
+        int x = Random.Range(-mapWidth / 2, mapWidth / 2);
+        int y = Random.Range(-mapHeight / 2, mapHeight / 2);
+        return new Vector3Int(x, y, 0);
     }
 
     bool IsGrassOrSoil(Tile tile)
