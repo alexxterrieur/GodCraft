@@ -3,21 +3,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+[System.Serializable]
+public abstract class SpawnableObjectData
+{
+    public GameObject prefab;
+    [Range(0f, 100f)] public float grassAndSoilChance;
+    [Range(0f, 100f)] public float mountainChance;
+    [Range(0f, 100f)] public float sandChance;
+}
+
+[System.Serializable]
+public class TreeData : SpawnableObjectData
+{
+
+}
+
+[System.Serializable]
+public class OreData : SpawnableObjectData
+{
+
+}
+
 public class VegetationGenerator : MonoBehaviour
 {
+    public static VegetationGenerator instance { get; private set; }
+
     [Header("Tilemap")]
     public Tilemap groundTilemap;
 
-    [Header("Tree Prefabs")]
-    public List<GameObject> grassAndSoilTrees;
-    public List<GameObject> sandTrees;
+    [Header("Trees to Spawn")]
+    public List<TreeData> trees;
+    public Transform treesParent;
 
-    [Header("Tree Generation Parameters")]
-    [Range(0f, .35f)] public float vegetationDensity;
+    [Header("Ores to Spawn")]
+    public List<OreData> ores;
+    public Transform oresParent;
+
+    [Header("Spawn Parameters")]
+    [Range(0f, 1f)] public float objectDensity;
     [Range(.1f, 5f)] public float noiseScale;
 
-    [Header("Distance Between Trees")]
-    [Range(0.5f, 5f)] public float minDistanceBetweenTrees;
+    [Header("Distance Between Objects")]
+    [Range(0.5f, 2f)] public float minDistanceBetweenObjects;
 
     [Header("Map Size")]
     [SerializeField] private int mapWidth;
@@ -25,46 +52,165 @@ public class VegetationGenerator : MonoBehaviour
     private float centerX;
     private float centerY;
 
-    private List<Vector3> placedTrees = new List<Vector3>();
+    [Header("Runtime Spawn Settings")]
+    [SerializeField] private int runtimeTreeSpawnAmount;
+    [SerializeField] private int runtimeOresSpawnAmount;
+    [SerializeField] private float spawnIntervalInGameSeconds;
 
-    //Call start function after 1 second so the map is spawn before
-    IEnumerator Start()
+    private List<Vector3> placedObjects = new List<Vector3>();
+    private TimeManager timeManager;
+
+    private void Awake()
     {
-        yield return new WaitForSeconds(1f);
-        centerX = mapWidth / 2f;
-        centerY = mapHeight / 2f;
-        GenerateTrees();
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
     }
 
-    void GenerateTrees()
+    private void Start()
+    {
+        centerX = mapWidth / 2f;
+        centerY = mapHeight / 2f;
+        timeManager = GameObject.FindWithTag("Managers").GetComponent<TimeManager>();
+
+        StartCoroutine(RuntimeVegetationGeneration());
+    }
+
+    public void GenerateObjects()
     {
         for (int x = 0; x < mapWidth; x++)
         {
             for (int y = 0; y < mapHeight; y++)
             {
-                //Get tiles positions
                 Vector3Int tilePosition = new Vector3Int(x - (mapWidth / 2), y - (mapHeight / 2), 0);
                 Tile tile = groundTilemap.GetTile<Tile>(tilePosition);
 
-                if (tile != null)
+                if (tile != null && !IsWater(tile))
                 {
-                    //check if the noiseScale allows to place a tree on the tile
+                    //Get Perlin noise value to determine if an object should be placed
                     float noiseValue = Mathf.PerlinNoise((x / noiseScale), (y / noiseScale));
 
-                    if (noiseValue < vegetationDensity)
+                    if (noiseValue < objectDensity)
                     {
-                        if (IsGrassOrSoil(tile))
-                        {
-                            PlaceTree(grassAndSoilTrees, tilePosition);
-                        }
-                        else if (IsSand(tile))
-                        {
-                            PlaceTree(sandTrees, tilePosition);
-                        }
+                        //Place trees
+                        PlaceObjectBasedOnTile(tile, tilePosition, trees);
+                        //Place ores
+                        PlaceObjectBasedOnTile(tile, tilePosition, ores);
                     }
                 }
             }
         }
+    }
+
+    void PlaceObjectBasedOnTile<T>(Tile tile, Vector3Int position, List<T> objects) where T : SpawnableObjectData
+    {
+        foreach (T objectData in objects)
+        {
+            float spawnChance = 0f;
+
+            //Determine spawn chance based on the type of tile
+            if (IsGrassOrSoil(tile))
+            {
+                spawnChance = objectData.grassAndSoilChance;
+            }
+            else if (IsMountain(tile))
+            {
+                spawnChance = objectData.mountainChance;
+            }
+            else if (IsSand(tile))
+            {
+                spawnChance = objectData.sandChance;
+            }
+
+            //Check if the object should spawn based on the calculated chance
+            if (Random.Range(0f, 100f) <= spawnChance)
+            {
+                PlaceObject(objectData.prefab, position, objectData is TreeData);
+            }
+        }
+    }
+
+    void PlaceObject(GameObject prefab, Vector3Int position, bool isTree)
+    {
+        Vector3 worldPosition = groundTilemap.CellToWorld(position) + new Vector3(0.5f, 0.5f, 0);
+
+        if (CanPlaceObject(worldPosition))
+        {
+            GameObject obj = Instantiate(prefab, worldPosition, Quaternion.identity);
+            if (isTree)
+                obj.transform.parent = treesParent;
+            else
+                obj.transform.parent = oresParent;
+
+            placedObjects.Add(worldPosition);  //Add to placed objects list
+        }
+    }
+
+    public void DestroyAllObjects()
+    {
+        foreach (Transform child in treesParent)
+        {
+            ResourceParameters resourceParameters = child.GetComponent<ResourceParameters>();
+            if (resourceParameters != null)
+            {
+                WorldRessources.instance.UnregisterResource(resourceParameters);
+            }
+            Destroy(child.gameObject);
+        }
+
+        foreach (Transform child in oresParent)
+        {
+            ResourceParameters resourceParameters = child.GetComponent<ResourceParameters>();
+            if (resourceParameters != null)
+            {
+                WorldRessources.instance.UnregisterResource(resourceParameters);
+            }
+            Destroy(child.gameObject);
+        }
+
+        placedObjects.Clear();
+    }
+
+    IEnumerator RuntimeVegetationGeneration()
+    {
+        while (true)
+        {
+            float adjustedInterval = spawnIntervalInGameSeconds / timeManager.timeSpeed; //Adjust spawn interval based on timeSpeed
+            yield return new WaitForSeconds(adjustedInterval);
+
+            for (int i = 0; i < runtimeTreeSpawnAmount; i++)
+            {
+                Vector3Int randomTilePosition = GetRandomGroundTilePosition();
+                Tile tile = groundTilemap.GetTile<Tile>(randomTilePosition);
+
+                if (tile != null && !IsWater(tile))
+                {
+                    PlaceObjectBasedOnTile(tile, randomTilePosition, trees);
+                }
+            }
+
+            for (int i = 0; i < runtimeOresSpawnAmount; i++)
+            {
+                Vector3Int randomTilePosition = GetRandomGroundTilePosition();
+                Tile tile = groundTilemap.GetTile<Tile>(randomTilePosition);
+
+                if (tile != null && !IsWater(tile))
+                {
+                    PlaceObjectBasedOnTile(tile, randomTilePosition, ores);
+                }
+            }
+        }
+    }
+
+
+    Vector3Int GetRandomGroundTilePosition()
+    {
+        int x = Random.Range(-mapWidth / 2, mapWidth / 2);
+        int y = Random.Range(-mapHeight / 2, mapHeight / 2);
+        return new Vector3Int(x, y, 0);
     }
 
     bool IsGrassOrSoil(Tile tile)
@@ -77,38 +223,22 @@ public class VegetationGenerator : MonoBehaviour
         return tile.name.Contains("Sand");
     }
 
-    void PlaceTree(List<GameObject> treePrefabs, Vector3Int position)
+    bool IsMountain(Tile tile)
     {
-        if (treePrefabs.Count > 0)
-        {
-            int randomIndex = Random.Range(0, treePrefabs.Count);
-            GameObject selectedTree = treePrefabs[randomIndex];
-
-            //Get world position (+ offset to be well placed)
-            Vector3 worldPosition = groundTilemap.CellToWorld(position) + new Vector3(0.5f, 0.5f, 0);
-
-            if (CanPlaceTree(worldPosition))
-            {
-                GameObject tree = Instantiate(selectedTree, worldPosition, Quaternion.identity);
-                tree.transform.parent = gameObject.transform;
-                placedTrees.Add(worldPosition);
-
-                //Register tree in grid (WorldRessources)
-                TreeParameters treeParams = tree.GetComponent<TreeParameters>();
-                if (treeParams != null)
-                {
-                    WorldRessources.instance.RegisterTree(treeParams);
-                }
-            }
-        }
+        return tile.name.Contains("Mountain");
     }
 
-    bool CanPlaceTree(Vector3 position)
+    bool IsWater(Tile tile)
     {
-        foreach (Vector3 placedPosition in placedTrees)
+        return tile.name.Contains("Water");
+    }
+
+    bool CanPlaceObject(Vector3 position)
+    {
+        foreach (Vector3 placedPosition in placedObjects)
         {
-            //Avoid trees to be too close
-            if (Vector3.Distance(position, placedPosition) < minDistanceBetweenTrees)
+            //Avoid objects being too close to each other
+            if (Vector3.Distance(position, placedPosition) < minDistanceBetweenObjects)
             {
                 return false;
             }

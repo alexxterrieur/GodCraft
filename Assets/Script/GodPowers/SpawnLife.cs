@@ -1,16 +1,18 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Tilemaps;
 
 public class SpawnLife : MonoBehaviour
 {
-    [SerializeField] private GameObject gameObjectToSpawn;
+    public GameObject selectedGameObjectToSpawn;
     [SerializeField] private float spawnBuffer;
+    [SerializeField] private Tilemap waterTilemap;
 
     private bool canSpawn = true;
+    [SerializeField] private bool canSpawnOnWater;
     private bool isClicking;
 
     public void OnClick(InputAction.CallbackContext ctx)
@@ -35,11 +37,33 @@ public class SpawnLife : MonoBehaviour
 
     private void SpawnGameObject()
     {
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.z = 0;
-        GameObject agent = Instantiate(gameObjectToSpawn, mousePosition, Quaternion.identity);
-        agent.GetComponent<NavMeshAgent>().updateRotation = false;
+        if (selectedGameObjectToSpawn != null)
+        {
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mousePosition.z = 0;
 
+            if(selectedGameObjectToSpawn.name.Contains("Human"))
+            {
+                canSpawnOnWater = false;
+            }
+            else
+                canSpawnOnWater = true;
+
+            if(!canSpawnOnWater)
+            {
+                if (IsOnWaterTile(mousePosition))
+                {
+                    Debug.Log("Cannot spawn on water");
+                    return;
+                }
+            }            
+
+            GameObject gameObjectToSpawn = Instantiate(selectedGameObjectToSpawn, mousePosition, Quaternion.identity);
+            NavMeshAgent agent = GetComponent<NavMeshAgent>();
+
+            if(agent != null )
+                agent.updateRotation = false;
+        }
     }
 
     private IEnumerator SpawnGameObjects()
@@ -55,6 +79,20 @@ public class SpawnLife : MonoBehaviour
             }
             yield return null;
         }
+    }
+
+    private bool IsOnWaterTile(Vector3 position)
+    {
+        if (waterTilemap == null)
+        {
+            Debug.LogError("Water Tilemap is not assigned!");
+            return false;
+        }
+
+        Vector3Int tilePosition = waterTilemap.WorldToCell(position);
+        TileBase tile = waterTilemap.GetTile(tilePosition);
+
+        return tile != null;
     }
 
     private bool IsPointerOverUI()

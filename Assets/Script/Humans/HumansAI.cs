@@ -1,168 +1,326 @@
-using UnityEngine.AI;
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class HumansAI : MonoBehaviour
 {
-    public HumansStats stats;
-    public TimeManager timeManager;
-    public (int year, int month) birthday;
-    private bool isAdult;
-
-    public float hunger;
-    public float thirst;
-    public int survivalDamages;
-
-    public NavMeshAgent agent;
-
-    private enum HumanState { Idle, SearchingFood, SearchingWater }
+    private enum HumanState { Idle, SearchingFood, SearchingWater, Eating, MovingToStorage, Working }
     private HumanState currentState = HumanState.Idle;
 
-    private TreeParameters currentTargetTree;
-    private float interactionDistance = 1f;
+    public enum Job { None, Lumberjack, Miner }
+    public Job currentJob = Job.None;
 
-    private bool isBusy = false;
-    private LifeManager lifeManager;
+    public NavMeshAgent agent;
+    private HumanTimeManager humanTimeManager;
+    private HumanInventory inventory;
+
+    private ResourceParameters currentTargetResource;
+    private float interactionDistance = 2f;
+    private VillageStorage targetStorage;
+    private bool isInteracting = false;
 
     private void Awake()
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-    }
 
-    private void Start()
-    {
-        timeManager = GameObject.FindWithTag("Managers").GetComponent<TimeManager>();
-        birthday = timeManager.GetDate();
-        lifeManager = GetComponent<LifeManager>();
-
-        StartCoroutine(TimeBasedUpdates());
+        inventory = GetComponent<HumanInventory>();
+        humanTimeManager = GetComponent<HumanTimeManager>();
     }
 
     private void Update()
     {
+        if (isInteracting) return; // Prevent state changes while interacting
+
         switch (currentState)
         {
+            case HumanState.MovingToStorage:
+                CheckStorageProximity();
+                break;
             case HumanState.SearchingFood:
                 SearchFood();
                 break;
             case HumanState.SearchingWater:
                 SearchWater();
                 break;
+            case HumanState.Eating:
+                EatFood();
+                break;
             case HumanState.Idle:
                 Idle();
                 break;
-            default:
+            case HumanState.Working:
+                Work();
                 break;
         }
     }
 
-    IEnumerator TimeBasedUpdates()
+    public void UpdateAgentSpeed(float newSpeed)
     {
-        while (true)
+        agent.speed = newSpeed;
+        agent.acceleration = newSpeed;
+    }
+
+    public void CheckNeeds(float hunger, float thirst)
+    {
+        if (currentState == HumanState.Idle)
         {
-            yield return new WaitForSeconds(timeManager.monthDuration / timeManager.timeSpeed);
-
-            hunger -= 5f;
-            thirst -= 5f;
-
-            (int currentYear, int currentMonth) = timeManager.GetDate();
-            stats.currentAge = currentYear - birthday.year;
-
-            if(stats.currentAge == 18 && currentMonth == birthday.month)
+            if (hunger <= 40)
             {
-                print(gameObject.name + " human is 18");
-                isAdult = true;
+                if (CheckForFoodInInventory())
+                {
+                    currentState = HumanState.Eating;
+                }
+                else
+                {
+                    currentState = HumanState.SearchingFood;
+                }
             }
-
-            if(stats.currentAge == stats.lifeEspectancy)
+            else if (thirst <= 40)
             {
-                print(gameObject.name + " lifeEsperancy reach");
-                lifeManager.TakeDamage(lifeManager.currentHealth);
+                currentState = HumanState.SearchingWater;
             }
-
-            if (!isBusy)
+            else if (currentJob != Job.None)
             {
-                CheckNeeds();
+                currentState = HumanState.Working;
             }
+        }
 
-            //Damages
-            if(hunger <= 0 ||  thirst <= 0)
-            {
-                lifeManager.TakeDamage(survivalDamages);
-            }
+        if (currentState == HumanState.SearchingWater && thirst > 40)
+        {
+            currentState = HumanState.Idle;
+        }
+
+        if (currentState == HumanState.SearchingFood && hunger > 40)
+        {
+            currentState = HumanState.Idle;
         }
     }
 
-    void CheckNeeds()
+    private bool CheckForFoodInInventory()
     {
-        if (hunger <= 40 && currentState != HumanState.SearchingFood)
+        return inventory.currentFruits > 0 || inventory.currentMeats > 0;
+    }
+
+    private void EatFood()
+    {
+        //Check if there's food in the inventory
+        if (CheckForFoodInInventory())
         {
-            currentState = HumanState.SearchingFood;
-            isBusy = true;
-        }
-        else if (thirst <= 40 && currentState != HumanState.SearchingWater)
-        {
-            currentState = HumanState.SearchingWater;
-            isBusy = true;
+            isInteracting = true;
+            if (inventory.currentMeats > 0)
+            {
+                inventory.RemoveResource("meat", 1);
+                humanTimeManager.hunger = Mathf.Min(humanTimeManager.hunger + (humanTimeManager.maxHunger * 0.75f), humanTimeManager.maxHunger); //Set hunger to 75%
+            }
+            else if (inventory.currentFruits > 0)
+            {
+                inventory.RemoveResource("fruit", 1);
+                humanTimeManager.hunger = humanTimeManager.maxHunger; //Set hunger to max value
+            }
+            currentState = HumanState.Idle;
+            StartCoroutine(Interacting()); //Interact coroutine to reset state
         }
         else
         {
-            currentState = HumanState.Idle;
-            isBusy = false;
+            currentState = HumanState.SearchingFood;
         }
     }
 
     void SearchFood()
     {
-        if (currentTargetTree == null || currentTargetTree.foodHarvested)
+        //Find fruit
+        if (currentTargetResource == null || currentTargetResource.IsBeingHarvested)
         {
-            currentTargetTree = WorldRessources.instance.FindNearestFoodTree(transform.position);
+            currentTargetResource = WorldRessources.instance.FindNearestResource(transform.position, "fruit");
 
-            if (currentTargetTree != null)
+            if (currentTargetResource != null && !currentTargetResource.IsBeingHarvested)
             {
-                agent.SetDestination(currentTargetTree.transform.position);
+                agent.SetDestination(currentTargetResource.transform.position);
+
+                //Subscribe to the resource's onResourceHarvested event
+                currentTargetResource.onResourceHarvested.AddListener(OnResourceHarvested);
             }
             else
             {
-                currentState = HumanState.Idle;
-                isBusy = false;
+                currentState = HumanState.Idle; //No resource found or it's being harvested
             }
         }
 
-        //Interact with tree
-        if (currentTargetTree != null && Vector3.Distance(transform.position, currentTargetTree.transform.position) < interactionDistance)
+        //Interact with resource
+        if (currentTargetResource != null && Vector3.Distance(transform.position, currentTargetResource.transform.position) < interactionDistance && !currentTargetResource.IsBeingHarvested)
         {
-            currentTargetTree.HarvestFood(this);
-            currentTargetTree = null;
+            StartCoroutine(currentTargetResource.FarmResource(inventory));
+            currentTargetResource = null;
             StartCoroutine(Interacting());
-            isBusy = false;
-            CheckNeeds();
+        }
+    }
+
+    private void OnResourceHarvested()
+    {
+        //If inventory is full, move to the storage
+        if (inventory.isFullOfSomething)
+        {
+            HumanVillageInfos villageInfo = GetComponent<HumanVillageInfos>();
+
+            if (!villageInfo.belongsToVillage)
+                return;
+            else
+            {
+                VillageStorage villageStorage = inventory.GetComponent<HumanVillageInfos>().village.GetVillageStorage();
+                if (villageStorage != null)
+                {
+                    MoveToVillageStorage(villageStorage);
+                    print("full, move to storage");
+                }
+            }
+        }
+
+        //Unfollow the event when the interaction is over
+        if (currentTargetResource != null)
+        {
+            currentTargetResource.onResourceHarvested.RemoveListener(OnResourceHarvested);
         }
     }
 
     void SearchWater()
     {
         Vector3 nearestWater = WorldRessources.instance.FindNearestWater(transform.position);
-
         if (nearestWater != Vector3.zero)
         {
             agent.SetDestination(nearestWater);
         }
         else
         {
+            print("No water found, returning to Idle state");
             currentState = HumanState.Idle;
-            isBusy = false;
+            humanTimeManager.isBusy = false;
         }
 
         //Interact with water
-        if(Vector3.Distance(transform.position, nearestWater) < interactionDistance)
+        if (Vector3.Distance(transform.position, nearestWater) < interactionDistance)
         {
-            thirst += 60;
+            isInteracting = true;
+            humanTimeManager.thirst = humanTimeManager.maxThirst; //Set thirst to max value
             StartCoroutine(Interacting());
-            isBusy = false;
-            CheckNeeds();
+            humanTimeManager.isBusy = false;
+
+            CheckNeeds(humanTimeManager.hunger, humanTimeManager.thirst);
+        }
+    }
+
+    public void MoveToVillageStorage(VillageStorage villageStorage)
+    {
+        targetStorage = villageStorage;
+        currentState = HumanState.MovingToStorage;
+        agent.SetDestination(villageStorage.transform.position);
+    }
+
+    private void CheckStorageProximity()
+    {
+        if (targetStorage != null && Vector3.Distance(transform.position, targetStorage.transform.position) < interactionDistance)
+        {
+            inventory.TransferToVillageStorage(targetStorage);
+            targetStorage = null;
+            currentState = HumanState.Idle;
+        }
+    }
+
+    private void Work()
+    {
+        if (humanTimeManager.hunger <= 40) //Check if the human is hungry before continuing work
+        {
+            if (CheckForFoodInInventory())
+            {
+                currentState = HumanState.Eating; //Eat if food is available
+            }
+            else
+            {
+                currentState = HumanState.SearchingFood; //Search for food if none in inventory
+            }
+            return; //Do not continue working if hungry
+        }
+
+        if (currentJob == Job.Lumberjack)
+        {
+            SearchWood();
+        }
+        else if (currentJob == Job.Miner)
+        {
+            SearchStoneOrOre();
+        }
+
+        if (inventory.isFullOfSomething)
+        {
+            HumanVillageInfos villageInfo = GetComponent<HumanVillageInfos>();
+
+            if (!villageInfo.belongsToVillage)
+                return;
+            else
+            {
+                VillageStorage villageStorage = inventory.GetComponent<HumanVillageInfos>().village.GetVillageStorage();
+                if (villageStorage != null)
+                {
+                    MoveToVillageStorage(villageStorage);
+                }
+            }            
+        }
+    }
+
+    private void SearchWood()
+    {
+        if (currentTargetResource == null || currentTargetResource.IsBeingHarvested)
+        {
+            currentTargetResource = WorldRessources.instance.FindNearestResource(transform.position, "wood");
+
+            if (currentTargetResource != null && !currentTargetResource.IsBeingHarvested)
+            {
+                agent.SetDestination(currentTargetResource.transform.position);
+                currentTargetResource.onResourceHarvested.AddListener(OnResourceHarvested);
+            }
+            else
+            {
+                currentState = HumanState.Idle; //No resource found
+            }
+        }
+
+        if (currentTargetResource != null && Vector3.Distance(transform.position, currentTargetResource.transform.position) < interactionDistance && !currentTargetResource.IsBeingHarvested)
+        {
+            StartCoroutine(currentTargetResource.FarmResource(inventory));
+            currentTargetResource = null;
+            StartCoroutine(Interacting());
+        }
+    }
+
+    private void SearchStoneOrOre()
+    {
+        if (currentTargetResource == null || currentTargetResource.IsBeingHarvested)
+        {
+            currentTargetResource = WorldRessources.instance.FindNearestResource(transform.position, "stone");
+
+            //20% chance to target ore
+            if (Random.value < 0.2f)
+            {
+                currentTargetResource = WorldRessources.instance.FindNearestResource(transform.position, "ore");
+            }
+
+            if (currentTargetResource != null && !currentTargetResource.IsBeingHarvested)
+            {
+                agent.SetDestination(currentTargetResource.transform.position);
+                currentTargetResource.onResourceHarvested.AddListener(OnResourceHarvested);
+            }
+            else
+            {
+                currentState = HumanState.Idle; //No resource found or interacting
+            }
+        }
+
+        if (currentTargetResource != null && Vector3.Distance(transform.position, currentTargetResource.transform.position) < interactionDistance && !currentTargetResource.IsBeingHarvested)
+        {
+            StartCoroutine(currentTargetResource.FarmResource(inventory));
+            currentTargetResource = null;
+            StartCoroutine(Interacting());
         }
     }
 
@@ -171,10 +329,11 @@ public class HumansAI : MonoBehaviour
         agent.isStopped = true;
         yield return new WaitForSeconds(1);
         agent.isStopped = false;
+        isInteracting = false; // Unlock state after interaction
     }
 
     void Idle()
     {
-        print("Idle");
+        print("Idle state");
     }
 }

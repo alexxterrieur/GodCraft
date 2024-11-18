@@ -1,10 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LifeManager : MonoBehaviour
 {
-    [SerializeField] private int maxHealth;
+    public int maxHealth;
     public int currentHealth;
 
     private void Start()
@@ -16,7 +14,7 @@ public class LifeManager : MonoBehaviour
     {
         currentHealth -= damage;
 
-        if (currentHealth <= 0)
+        if(currentHealth <= 0)
         {
             Death();
         }
@@ -26,7 +24,25 @@ public class LifeManager : MonoBehaviour
     {
         if(gameObject.tag == "Human")
         {
-            print("human dead");
+            HumanVillageInfos villageInfo = gameObject.GetComponent<HumanVillageInfos>();
+
+            if(villageInfo.belongsToVillage && villageInfo.village != null)
+            {
+                if (villageInfo.village.GetVillagerCount() == 1)
+                {
+                    Debug.Log("Village destroyed");
+                    villageInfo.village.DestroyVillage();                    
+                }
+
+                if (villageInfo.village.GetVillagerCount() > 1 && villageInfo.isVillageChief)
+                {
+                    villageInfo.village.DesignateNewChief();
+                }                
+
+                villageInfo.village.RemoveVillager(villageInfo);                
+            }
+
+            print("Human dead");
             Destroy(gameObject);
         }
     }

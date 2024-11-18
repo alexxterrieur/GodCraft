@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TreeParameters : MonoBehaviour
@@ -10,7 +9,7 @@ public class TreeParameters : MonoBehaviour
     public float foodCooldown;
     public float woodGiven;
 
-    public void HarvestFood(HumansAI human)
+    public void HarvestFood(HumanTimeManager human)
     {
         if(canGiveFood && !foodHarvested)
         {

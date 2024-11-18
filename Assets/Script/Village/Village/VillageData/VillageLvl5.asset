@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8ae86a393f2a9843804a253e3114579, type: 3}
+  m_Name: VillageLvl5
+  m_EditorClassIdentifier: 
+  maxWoods: 150
+  maxStones: 100
+  maxOres: 40
+  maxMeats: 500
+  maxFruits: 500
+  maxWater: 500
+  maxHouses: 25
+  maxHousesLevel: 5
+  villagersStats: {fileID: 11400000, guid: 5dce4f6380e412b48a92f3d0a671fd7c, type: 2}
+  ressourcesNeededForNextLevel:
+  - resourceType: stone
+    quantity: 90
+  - resourceType: ore
+    quantity: 20
+  sprite: {fileID: 21300000, guid: 504abcd912d49f54abee3d0c2dc7490c, type: 3}
